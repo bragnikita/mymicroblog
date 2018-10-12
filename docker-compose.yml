@@ -1,0 +1,22 @@
+version: "3"
+services:
+  web:
+    build: .
+    environment:
+      RAILS_ENV: "docker-test"
+    command: "./docker-starter.sh"
+    ports:
+      - "4000:3000"
+    volumes:
+      - .:/app
+    links:
+      - db
+    depends_on:
+      - db
+  db:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: nikita
+      MYSQL_DATABASE: "mymicroblog_test"
+      MYSQL_USER: mymicroblog
+      MYSQL_PASSWORD: nikita
