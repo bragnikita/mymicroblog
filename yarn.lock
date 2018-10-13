@@ -6048,3 +6048,7 @@ yargs@~3.10.0:
     cliui "^2.1.0"
     decamelize "^1.0.0"
     window-size "0.1.0"
+
+yarn@^1.10.1:
+  version "1.12.0"
+  resolved "https://registry.yarnpkg.com/yarn/-/yarn-1.12.0.tgz#ef679f888cfd952046be4ab46365401363077cae"
