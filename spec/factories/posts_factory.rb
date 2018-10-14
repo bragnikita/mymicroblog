@@ -1,0 +1,11 @@
+FactoryBot.define do
+  factory :post do
+    title {Faker::Book.title}
+    excerpt {Faker::Lorem.paragraph_by_chars(256)}
+    slug {Faker::Internet.slug(title)}
+    published_at { Faker::Date.backward(10)}
+    source_filter { 'html' }
+    association :owner, factory: :admin
+  end
+
+end
