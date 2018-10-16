@@ -13,7 +13,7 @@
 
 require 'rails_helper'
 
-RSpec.describe 'User', type: :model do
+RSpec.describe 'User', type: :model, with_empty_db: true do
 
   describe "CRUD" do
     let(:user) { create(:user) }

@@ -13,4 +13,11 @@
 
 class User < ApplicationRecord
 
+  def self.admin_id
+    User.admin.id
+  end
+
+  def self.admin
+    User.find_by!(:admin => true)
+  end
 end

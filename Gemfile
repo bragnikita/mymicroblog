@@ -42,7 +42,7 @@ group :development, "docker-dev" do
   gem 'spring'
   gem 'spring-watcher-listen', '~> 2.0.0'
 
-  gem 'annotate', git: 'https://github.com/ctran/annotate_models.git'
+  gem 'annotate'
 end
 
 group :test,"docker-test" do

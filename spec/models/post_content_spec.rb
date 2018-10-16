@@ -12,7 +12,7 @@
 
 require 'rails_helper'
 
-RSpec.describe 'PostContent', type: :model do
+RSpec.describe 'PostContent', type: :model, with_empty_db: true do
 
   describe "CRUD" do
     let(:content) { create(:post_content) }

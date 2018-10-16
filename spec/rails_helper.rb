@@ -68,6 +68,9 @@ end
 
   config.around(:each) do |example|
     DatabaseCleaner.cleaning do
+      unless example.metadata[:with_empty_db]
+        prepare_master_data(example.metadata.fetch(:initial_setup_name, :test))
+      end
       example.run
     end
   end
@@ -81,4 +84,8 @@ Shoulda::Matchers.configure do |config|
 
     with.library :rails
   end
+end
+
+def prepare_master_data(initial_setup_name)
+  init_db(initial_setup_name)
 end

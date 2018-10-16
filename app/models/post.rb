@@ -16,5 +16,13 @@
 class Post < ApplicationRecord
 
   belongs_to :owner, class_name: "User", optional: false
+  has_many :contents, class_name: "PostContent"
 
+  def self.by_slug(slug)
+    Post.find_by!(:slug => slug)
+  end
+
+  def filtered_content
+    self.contents.find_by!(:type => 'filtered').content
+  end
 end
