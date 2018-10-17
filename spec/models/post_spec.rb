@@ -3,14 +3,22 @@
 # Table name: posts
 #
 #  id            :bigint(8)        not null, primary key
-#  title         :string(255)
 #  excerpt       :text(65535)
-#  slug          :string(255)
 #  published_at  :datetime
+#  slug          :string(255)
 #  source_filter :string(255)
-#  owner_id      :bigint(8)
+#  title         :string(255)
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
+#  owner_id      :bigint(8)        not null
+#
+# Indexes
+#
+#  index_posts_on_owner_id  (owner_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (owner_id => users.id)
 #
 
 require 'rails_helper'

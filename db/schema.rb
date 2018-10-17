@@ -12,7 +12,7 @@
 
 ActiveRecord::Schema.define(version: 2018_10_13_103311) do
 
-  create_table "post_contents", options: "ENGINE=InnoDB DEFAULT CHARSET=latin1", force: :cascade do |t|
+  create_table "post_contents", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.text "content"
     t.string "type"
     t.bigint "post_id", null: false
@@ -21,7 +21,7 @@ ActiveRecord::Schema.define(version: 2018_10_13_103311) do
     t.index ["post_id"], name: "index_post_contents_on_post_id"
   end
 
-  create_table "posts", options: "ENGINE=InnoDB DEFAULT CHARSET=latin1", force: :cascade do |t|
+  create_table "posts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "title"
     t.text "excerpt"
     t.string "slug"
@@ -33,7 +33,7 @@ ActiveRecord::Schema.define(version: 2018_10_13_103311) do
     t.index ["owner_id"], name: "index_posts_on_owner_id"
   end
 
-  create_table "users", options: "ENGINE=InnoDB DEFAULT CHARSET=latin1", force: :cascade do |t|
+  create_table "users", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "username", null: false
     t.string "password", null: false
     t.string "email"

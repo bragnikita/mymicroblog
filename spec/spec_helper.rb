@@ -16,6 +16,7 @@
 require 'rspec/collection_matchers'
 require 'forwardable'
 require "rspec/json_expectations"
+require 'capybara/rspec'
 
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate
