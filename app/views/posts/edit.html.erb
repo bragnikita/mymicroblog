@@ -1,1 +1,16 @@
-<h1>Edit</h1>
+<h1>New</h1>
+<form action="/posts/create" method="POST">
+  <label for="title">Title</label>
+  <input name="title" />
+
+  <label for="slug">Slug</label>
+  <input name="slug" id="slug"/>
+
+  <label for="excerpt">Excerpt</label>
+  <textarea name="excerpt" id="excerpt"></textarea>
+
+  <label for="text">Text</label>
+  <textarea name="text" id="text" cols="20"></textarea>
+
+  <button type="submit" value="submit" name="send" id="send">Send</button>
+</form>

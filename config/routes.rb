@@ -5,6 +5,7 @@ Rails.application.routes.draw do
     get '/p/:slug', action: :display
     get '/posts', action: :index
     get '/posts/new', action: :new
+    post '/posts/create', action: :create
   end
 
 end

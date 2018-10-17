@@ -19,8 +19,11 @@ end
 
 feature "Post creation" do
 
+  given(:post_text) {
+    '<h2>New post</h2><p>My genius post</p>'
+  }
   given(:post) {
-    attributes_for(:post, content: '<h2>New post</h2><p>My genius post</p>')
+    attributes_for(:post)
   }
 
   background do
@@ -30,15 +33,15 @@ feature "Post creation" do
   scenario "post with unique slug" do
     visit '/posts/new'
 
-    fill_in 'title', with: post.title
-    fill_in 'text', with: post.content
-    fill_in 'excerpt', with: post.excerpt
-    fill_in 'slug', with: post.slug
+    fill_in 'title', with: post[:title]
+    fill_in 'text', with: post_text
+    fill_in 'excerpt', with: post[:excerpt]
+    fill_in 'slug', with: post[:slug]
 
     click_button 'send'
 
-    expect(page).to assert_current_path("/p/#{slug}")
-    expect(page.find('#title')).to have_text(post.title)
-    expect(page.find('#text')).to have_text('My genius post', exact: false)
+    expect(page).to have_current_path("/p/#{post[:slug]}")
+    expect(page.find('#post-title')).to have_text(post[:title])
+    expect(page.find('#post-content')).to have_text('My genius post', exact: false)
   end
 end
