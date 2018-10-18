@@ -9,7 +9,7 @@ RSpec.describe "displaying the post", type: :system do
       )).call.result.post
   }
 
-  it "displays all elements", :process_js => true do
+  it "displays all elements" do
     visit "/p/#{post.slug}"
 
     expect(page).to have_selector('#post-title')
@@ -17,7 +17,7 @@ RSpec.describe "displaying the post", type: :system do
   end
 end
 
-feature "Post creation" do
+feature "Post creation", type: :system do
 
   given(:post_text) {
     '<h2>New post</h2><p>My genius post</p>'
@@ -30,7 +30,7 @@ feature "Post creation" do
 
   end
 
-  scenario "post with unique slug" do
+  scenario "post with unique slug", :process_js => true do
     visit '/posts/new'
 
     fill_in 'title', with: post[:title]

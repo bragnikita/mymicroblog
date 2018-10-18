@@ -1,4 +1,4 @@
 <div data-page="post--display" >
   <h1 id="post-title"><%= @post.title %></h1>
-  <div id="post-content"><%= @post.text %></div>
+  <div id="post-content"><%= raw(@post.text) %></div>
 </div>

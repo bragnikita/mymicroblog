@@ -13,13 +13,20 @@ class PostsController < ApplicationController
   def create
     slug = params[:slug]
     Operations::AddPost.new({
-                title: params[:title],
-                content: params[:text],
-                excerpt: params[:excerpt],
-                slug: params[:slug],
-                published_at: Time.now
+                              title: params[:title],
+                              content: params[:text],
+                              excerpt: params[:excerpt],
+                              slug: params[:slug],
+                              published_at: Time.now
                             }).call
-    redirect_to "/p/#{slug}"
+    if request.xhr?
+      render json: {
+        result: 0,
+        redirect_to: "/p/#{slug}"
+      }
+    else
+      redirect_to "/p/#{slug}"
+    end
   end
 
   def display
@@ -29,6 +36,7 @@ class PostsController < ApplicationController
 
   class ViewModel
     attr_accessor :post
+
     def initialize(post)
       @post = post
     end
