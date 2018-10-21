@@ -1,0 +1,18 @@
+[data-name=editor-component] {
+  form {
+    display: flex;
+    flex-direction: column;
+    .c_row {
+      display: flex;
+      label {
+        min-width: 100px;
+      }
+    }
+    textarea[name=content] {
+      min-height: 300px;
+    }
+  }
+}
+.right_icon {
+  margin-left: 5px;
+}

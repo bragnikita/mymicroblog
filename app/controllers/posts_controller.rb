@@ -14,7 +14,7 @@ class PostsController < ApplicationController
     slug = params[:slug]
     Operations::AddPost.new({
                               title: params[:title],
-                              content: params[:text],
+                              content: params[:content],
                               excerpt: params[:excerpt],
                               slug: params[:slug],
                               published_at: Time.now
