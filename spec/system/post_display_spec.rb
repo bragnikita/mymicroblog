@@ -34,7 +34,7 @@ feature "Post creation", type: :system do
     visit '/posts/new'
 
     fill_in 'title', with: post[:title]
-    fill_in 'text', with: post_text
+    fill_in 'content', with: post_text
     fill_in 'excerpt', with: post[:excerpt]
     fill_in 'slug', with: post[:slug]
 

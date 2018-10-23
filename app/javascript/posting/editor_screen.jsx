@@ -3,9 +3,11 @@ import ReactDOM from 'react-dom'
 import $ from 'jquery'
 import _ from 'lodash'
 import TextField from '@material-ui/core/TextField'
+import InputAdornment from '@material-ui/core/InputAdornment'
 import Button from '@material-ui/core/Button';
 import './styles.scss'
 import Icon from "@material-ui/core/es/Icon/Icon";
+import {Formik} from 'formik';
 
 const validators = [
     {name: 'title', validator: (val, values) => val ? undefined : 'Required field'},
@@ -16,7 +18,10 @@ const validators = [
 const validateAll = (values) => {
     const errors = {};
     validators.forEach((v) => {
-        errors[v.name] = v.validator(values[v.name], values);
+        const res = v.validator(values[v.name], values);
+        if (res) {
+            errors[v.name] = res;
+        }
     });
     return errors;
 };
@@ -24,17 +29,6 @@ const validateAll = (values) => {
 class Editor extends React.Component {
     constructor(props) {
         super(props);
-
-        this.state = {
-            values: {
-                title: '',
-                slug: '',
-                excerpt: '',
-                content: ''
-            },
-            displayErrors: false,
-        };
-        this.state.errors = validateAll(this.state.values);
     }
 
     onTextInput = (e) => {
@@ -63,107 +57,102 @@ class Editor extends React.Component {
         return _.every(Object.values(this.state.errors), (v) => v === undefined);
     };
 
-
-    setErrorState = (state, field, validator) => {
-        state[field] = validator(this.state[field], this.state);
-    };
-
-    submit = (e) => {
-        e.preventDefault();
-        const isValid = this.isValid();
-
-        if (!isValid && !this.state.displayErrors) {
-            this.setState({
-                displayErrors: true,
-            });
-        }
-
-        if (!isValid) {
-            return;
-        }
-
+    submit = (values, actions) => {
         $.ajax({
             url: '/posts/create',
             method: 'post',
-            data: this.state.values,
+            data: values,
         }).then((result) => {
+            actions.setSubmitting(false);
             window.location.href = window.location.origin + result.redirect_to
         })
     };
 
     render() {
-        const valid = this.isValid();
-        const values = this.state.values;
-        const errors = this.state.displayErrors ? this.state.errors : {};
+
+        const initialValues = {
+            title: '', slug: '', content: '', excerpt: '',
+        };
         return (
+            <Formik
+                initialValues={initialValues}
+                validate={validateAll}
+                onSubmit={this.submit}
+            >{({values, errors, isSubmitting, submitCount, touched, isValid, handleChange, handleSubmit}) => (
+                <div data-name="editor-component">
+                    <form>
+                        <div className="c_row">
+                            <TextField
+                                name="title"
+                                label={"Title"}
+                                variant={"outlined"}
+                                margin="normal"
+                                fullWidth
+                                placeholder={"Title"}
+                                onChange={handleChange}
+                                value={values['title']}
+                                error={!!errors['title']}
+                                helperText={errors['title']}
+                            />
+                        </div>
 
-            <div data-name="editor-component">
-                <form>
-                    <div className="c_row">
-                        <TextField
-                            name="title"
-                            label={"Title"}
-                            variant={"outlined"}
-                            margin="normal"
-                            fullWidth
-                            placeholder={"Title"}
-                            onChange={this.onTextInput}
-                            value={values['title']}
-                            error={!!errors['title']}
-                            helperText={errors['title']}
-                        />
-                    </div>
+                        <div className="c_row">
+                            <TextField
+                                name="slug"
+                                label={"Slug"}
+                                variant={"outlined"}
+                                margin="normal"
+                                fullWidth
+                                onChange={handleChange}
+                                value={values['slug']}
+                                error={!!errors['slug']}
+                                helperText={errors['slug']}
+                                InputProps={{
+                                    startAdornment: <InputAdornment position="start">/</InputAdornment>,
+                                }}
+                            />
+                        </div>
 
-                    <div className="c_row">
-                        <TextField
-                            name="slug"
-                            label={"Slug"}
-                            variant={"outlined"}
-                            margin="normal"
-                            fullWidth
-                            onChange={this.onTextInput}
-                            value={values['slug']}
-                            error={!!errors['slug']}
-                            helperText={errors['slug']}
-                        />
-                    </div>
+                        <div className="c_row">
+                            <TextField
+                                name="excerpt"
+                                label={"Excerpt"}
+                                variant={"outlined"}
+                                margin="normal"
+                                fullWidth
+                                onChange={handleChange}
+                                value={values['excerpt']}
+                                multiline
+                                placeholder={"Short description"}
+                                rows={3}
+                                rowsMax={6}
+                            />
+                        </div>
 
-                    <div className="c_row">
-                        <TextField
-                            name="excerpt"
-                            label={"Excerpt"}
-                            variant={"outlined"}
-                            margin="normal"
-                            fullWidth
-                            onChange={this.onTextInput}
-                            value={values['excerpt']}
-                            multiline
-                            placeholder={"Short description"}
-                            rows={3}
-                            rowsMax={6}
-                        />
-                    </div>
+                        <div className="c_row">
+                            <TextField
+                                name="content"
+                                label={"Post text"}
+                                variant={"outlined"}
+                                margin="normal"
+                                fullWidth
+                                onChange={handleChange}
+                                value={values['content']}
+                                multiline
+                                placeholder={"Post body"}
+                            />
+                        </div>
+                    </form>
+                    <Button type="submit" id="send" variant="contained" color="primary" onClick={handleSubmit}
+                             name="send"
+                             disabled={!isValid || isSubmitting}>
+                        Publish
+                        <Icon className={"right_icon"}>publish</Icon>
+                    </Button>
+                </div>
+            )}
+            </Formik>
 
-                    <div className="c_row">
-                        <TextField
-                            name="content"
-                            label={"Post text"}
-                            variant={"outlined"}
-                            margin="normal"
-                            fullWidth
-                            onChange={this.onTextInput}
-                            value={values['content']}
-                            multiline
-                            placeholder={"Post body"}
-                        />
-                    </div>
-                </form>
-                <Button variant="contained" color="primary" onClick={this.submit} name="send"
-                        disabled={!valid && this.state.displayErrors}>
-                    Publish
-                    <Icon className={"right_icon"}>publish</Icon>
-                </Button>
-            </div>
 
         )
     }
