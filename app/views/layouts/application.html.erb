@@ -1,16 +1,21 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Mymicroblog</title>
-    <%= csrf_meta_tags %>
-    <%= csp_meta_tag %>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <%= stylesheet_pack_tag "application" %>
-  </head>
+<head>
+  <title>
+    <%= content_for?(:title) ? yield(:title) : @page.title %>
+  </title>
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <%= stylesheet_pack_tag "application" %>
+  <style>
+    <%= content_for?(:styles) ? yield(:styles) : '' %>
+  </style>
+</head>
 
-  <body>
-    <%= yield %>
-    <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
-  </body>
+<body>
+<%= content_for?(:content) ? yield(:content) : yield %>
+<%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
+</body>
 </html>

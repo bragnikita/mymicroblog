@@ -1,4 +1,14 @@
-<div data-page="post--display" >
-  <h1 id="post-title"><%= @post.title %></h1>
-  <div id="post-content"><%= raw(@post.text) %></div>
+<div data-page="post--display" class="post__display--root">
+  <h1 id="post-title" class="p__title"><%= @post.title %></h1>
+  <div class="p__column">
+    <div id="post-content" class="p__content">
+      <%= raw(@post.text) %>
+    </div>
+    <div id="post-action" class="p__actions">
+      <% if @post.owner? %>
+          <a href="<%= @post.path_edit %>">
+          Edit</a>
+      <% end %>
+    </div>
+  </div>
 </div>

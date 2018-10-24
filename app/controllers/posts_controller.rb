@@ -6,8 +6,34 @@ class PostsController < ApplicationController
   end
 
   def new
+    render 'new'
+  end
 
+
+  def edit
+    post = Post.find(params[:id])
+    page.title = "[Edit]#{post.title}"
     render 'edit'
+  end
+
+  def update
+    slug = params[:slug]
+    post = Post.find(params[:id])
+    post.update!({
+                   title: params[:title],
+                   excerpt: params[:excerpt],
+                   slug: params[:slug],
+                 })
+    post.source_content_obj.update!({content: params[:content]})
+    post.filtered_content_obj.update!({content: params[:content]})
+    if request.xhr?
+      render json: {
+        result: 0,
+        redirect_to: "/p/#{slug}"
+      }
+    else
+      redirect_to "/p/#{slug}"
+    end
   end
 
   def create
@@ -31,7 +57,21 @@ class PostsController < ApplicationController
 
   def display
     @post = ViewModel.new(Post.by_slug(params[:slug]))
-    render 'display'
+    page.title = @post.title
+    render 'display', layout: 'layouts/post_display'
+  end
+
+  def get
+    post = Post.find(params[:id])
+    render json: {
+      object: {
+        id: post.id,
+        title: post.title,
+        slug: post.slug,
+        excerpt: post.excerpt,
+        content: post.source_content
+      }
+    }
   end
 
   class ViewModel
@@ -47,6 +87,21 @@ class PostsController < ApplicationController
 
     def title
       @post.title
+    end
+
+    def styles
+      #TODO
+      ''
+    end
+
+    def owner?
+      #TODO
+      true
+    end
+
+    def path_edit
+
+      "/post/#{post.id}/edit"
     end
   end
 end

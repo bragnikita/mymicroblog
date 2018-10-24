@@ -8,4 +8,5 @@
 // layout file, like app/views/layouts/application.html.erb
 
 import '../posting/editor_screen';
+import '../posting/post_display.scss';
 console.log('Hello World from Webpacker');

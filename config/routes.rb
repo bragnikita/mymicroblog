@@ -4,7 +4,10 @@ Rails.application.routes.draw do
   controller :posts do
     get '/p/:slug', action: :display
     get '/posts', action: :index
+    get '/post/:id/edit', action: :edit
     get '/posts/new', action: :new
+    get '/post/:id', action: :get
+    post '/post/:id/update', action: :update
     post '/posts/create', action: :create
   end
 

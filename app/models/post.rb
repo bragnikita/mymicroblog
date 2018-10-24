@@ -30,7 +30,19 @@ class Post < ApplicationRecord
     Post.find_by!(:slug => slug)
   end
 
+  def source_content_obj
+    self.contents.find_by!(:type => 'source')
+  end
+
+  def filtered_content_obj
+    self.contents.find_by!(:type => 'filtered')
+  end
+
   def filtered_content
-    self.contents.find_by!(:type => 'filtered').content
+    self.filtered_content_obj.content
+  end
+
+  def source_content
+    self.source_content_obj.content
   end
 end

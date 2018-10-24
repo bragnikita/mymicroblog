@@ -29,7 +29,39 @@ const validateAll = (values) => {
 class Editor extends React.Component {
     constructor(props) {
         super(props);
+        this.state = {
+            dataLoaded: false,
+            initialValues : {
+                title: '', slug: '', content: '', excerpt: '',
+            }
+        }
     }
+
+    isEdit() {
+        return !!this.props.postId;
+    };
+
+    isNew() {
+        return !this.isEdit();
+    }
+
+    componentDidMount() {
+        if (this.isNew()) {
+            return;
+        }
+        $.ajax({
+            url: `/post/${this.props.postId}`,
+            method: 'get',
+        }).then((result) => {
+            this.setState({
+                dataLoaded: true,
+                initialValues: {
+                    ...result.object,
+                },
+            });
+
+        })
+    };
 
     onTextInput = (e) => {
         const fieldName = e.target.name;
@@ -58,27 +90,38 @@ class Editor extends React.Component {
     };
 
     submit = (values, actions) => {
-        $.ajax({
-            url: '/posts/create',
-            method: 'post',
-            data: values,
-        }).then((result) => {
-            actions.setSubmitting(false);
-            window.location.href = window.location.origin + result.redirect_to
-        })
+        if (this.props.postId) {
+            $.ajax({
+                url: `/post/${this.props.postId}/update`,
+                method: 'post',
+                data: values,
+            }).then((result) => {
+                actions.setSubmitting(false);
+                window.location.href = window.location.origin + result.redirect_to
+            })
+        } else {
+            $.ajax({
+                url: '/posts/create',
+                method: 'post',
+                data: values,
+            }).then((result) => {
+                actions.setSubmitting(false);
+                window.location.href = window.location.origin + result.redirect_to
+            })
+        }
     };
 
     render() {
-
-        const initialValues = {
-            title: '', slug: '', content: '', excerpt: '',
-        };
+        if (this.isEdit() && !this.state.dataLoaded) {
+            return null;
+        }
         return (
             <Formik
-                initialValues={initialValues}
+                initialValues={this.state.initialValues}
                 validate={validateAll}
                 onSubmit={this.submit}
-            >{({values, errors, isSubmitting, submitCount, touched, isValid, handleChange, handleSubmit}) => (
+                enableReinitialize={!!this.props.postId}
+            >{({values, errors, isSubmitting, submitCount, touched, isValid, handleChange, handleSubmit, handleBlur}) => (
                 <div data-name="editor-component">
                     <form>
                         <div className="c_row">
@@ -90,9 +133,10 @@ class Editor extends React.Component {
                                 fullWidth
                                 placeholder={"Title"}
                                 onChange={handleChange}
+                                onBlur={handleBlur}
                                 value={values['title']}
-                                error={!!errors['title']}
-                                helperText={errors['title']}
+                                error={touched['title'] && !!errors['title']}
+                                helperText={touched['title'] ? errors['title'] : ''}
                             />
                         </div>
 
@@ -104,9 +148,10 @@ class Editor extends React.Component {
                                 margin="normal"
                                 fullWidth
                                 onChange={handleChange}
+                                onBlur={handleBlur}
                                 value={values['slug']}
-                                error={!!errors['slug']}
-                                helperText={errors['slug']}
+                                error={touched['slug'] && !!errors['slug']}
+                                helperText={touched['slug'] ? errors['slug'] : ''}
                                 InputProps={{
                                     startAdornment: <InputAdornment position="start">/</InputAdornment>,
                                 }}
@@ -180,9 +225,18 @@ $(
             })
         ;
 
-        const editor = document.getElementById('post-editor');
-        if (editor) {
-            ReactDOM.render(<Editor/>, editor);
+        const editorElement = document.getElementById('post-editor');
+        if (editorElement) {
+            let editor;
+            const page_pathname = window.location.pathname;
+            const m = page_pathname.match(/^\/post\/(.+)\/edit$/i);
+            if (m) {
+                const id = m[1];
+                editor = <Editor postId={id}/>
+            } else {
+                editor = <Editor/>
+            }
+            ReactDOM.render(editor, editorElement);
         }
     })
 ;

@@ -1,0 +1,10 @@
+<% content_for :title do %>
+    <%= @post.title %>
+<% end %>
+<% content_for :styles do %>
+    <%= raw(@post.styles) %>
+<% end %>
+<% content_for :content do %>
+    <%= yield %>
+<% end %>
+<%= render template: "layouts/application" %>
