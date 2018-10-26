@@ -8,6 +8,10 @@ module Operations
       @user_id = attributes[:user_id]
     end
 
+    def call!
+      self.call
+    end
+
     def call
       @post = Post.new(attributes.slice(:title, :excerpt, :slug, :published_at, :source_filter))
       @post.owner_id = user_id ? user_id : User.admin_id

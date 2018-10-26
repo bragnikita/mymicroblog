@@ -17,15 +17,16 @@ class PostsController < ApplicationController
   end
 
   def update
-    slug = params[:slug]
-    post = Post.find(params[:id])
-    post.update!({
-                   title: params[:title],
-                   excerpt: params[:excerpt],
-                   slug: params[:slug],
-                 })
-    post.source_content_obj.update!({content: params[:content]})
-    post.filtered_content_obj.update!({content: params[:content]})
+    p = post_parameters
+    post = Post.find(p[:id])
+    attrs_to_update = p.slice(:title, :excerpt, :slug)
+    post.update!(attrs_to_update)
+    if p.dig(:contents, :main)
+      post.source_content_obj.update!({content: p[:contents][:main]})
+      post.filtered_content_obj.update!({content: p[:contents][:main]})
+    end
+
+    slug = post.slug
     if request.xhr?
       render json: {
         result: 0,
@@ -72,6 +73,12 @@ class PostsController < ApplicationController
         content: post.source_content
       }
     }
+  end
+
+  private
+
+  def post_parameters
+    params.permit(:id, :title, :slug, :excerpt, contents: {})
   end
 
   class ViewModel

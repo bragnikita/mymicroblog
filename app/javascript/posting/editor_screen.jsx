@@ -8,6 +8,7 @@ import Button from '@material-ui/core/Button';
 import './styles.scss'
 import Icon from "@material-ui/core/es/Icon/Icon";
 import {Formik} from 'formik';
+import {posting} from '../services/apis';
 
 const validators = [
     {name: 'title', validator: (val, values) => val ? undefined : 'Required field'},
@@ -31,7 +32,7 @@ class Editor extends React.Component {
         super(props);
         this.state = {
             dataLoaded: false,
-            initialValues : {
+            initialValues: {
                 title: '', slug: '', content: '', excerpt: '',
             }
         }
@@ -49,18 +50,16 @@ class Editor extends React.Component {
         if (this.isNew()) {
             return;
         }
-        $.ajax({
-            url: `/post/${this.props.postId}`,
-            method: 'get',
-        }).then((result) => {
-            this.setState({
-                dataLoaded: true,
-                initialValues: {
-                    ...result.object,
-                },
-            });
+        posting.get(this.props.postId)
+            .then((result) => {
+                this.setState({
+                    dataLoaded: true,
+                    initialValues: {
+                        ...result.object,
+                    },
+                });
 
-        })
+            })
     };
 
     onTextInput = (e) => {
@@ -91,23 +90,17 @@ class Editor extends React.Component {
 
     submit = (values, actions) => {
         if (this.props.postId) {
-            $.ajax({
-                url: `/post/${this.props.postId}/update`,
-                method: 'post',
-                data: values,
-            }).then((result) => {
-                actions.setSubmitting(false);
-                window.location.href = window.location.origin + result.redirect_to
-            })
+            posting.update(this.props.postId, values)
+                .then((result) => {
+                    actions.setSubmitting(false);
+                    window.location.href = window.location.origin + result.redirect_to
+                });
         } else {
-            $.ajax({
-                url: '/posts/create',
-                method: 'post',
-                data: values,
-            }).then((result) => {
-                actions.setSubmitting(false);
-                window.location.href = window.location.origin + result.redirect_to
-            })
+            posting.create(values)
+                .then((result) => {
+                    actions.setSubmitting(false);
+                    window.location.href = window.location.origin + result.redirect_to
+                });
         }
     };
 
@@ -189,8 +182,8 @@ class Editor extends React.Component {
                         </div>
                     </form>
                     <Button type="submit" id="send" variant="contained" color="primary" onClick={handleSubmit}
-                             name="send"
-                             disabled={!isValid || isSubmitting}>
+                            name="send"
+                            disabled={!isValid || isSubmitting}>
                         Publish
                         <Icon className={"right_icon"}>publish</Icon>
                     </Button>
@@ -203,40 +196,18 @@ class Editor extends React.Component {
     }
 }
 
-$(
-    () => {
-
-        const
-            token = $('meta[name="csrf-token"]').attr('content');
-
-        $
-            .ajaxSetup({
-                beforeSend: function
-
-                    (xhr) {
-                    xhr
-                        .setRequestHeader(
-                            'X-CSRF-Token'
-                            ,
-                            token
-                        )
-                    ;
-                }
-            })
-        ;
-
-        const editorElement = document.getElementById('post-editor');
-        if (editorElement) {
-            let editor;
-            const page_pathname = window.location.pathname;
-            const m = page_pathname.match(/^\/post\/(.+)\/edit$/i);
-            if (m) {
-                const id = m[1];
-                editor = <Editor postId={id}/>
-            } else {
-                editor = <Editor/>
-            }
-            ReactDOM.render(editor, editorElement);
+$(() => {
+    const editorElement = document.getElementById('post-editor');
+    if (editorElement) {
+        let editor;
+        const page_pathname = window.location.pathname;
+        const m = page_pathname.match(/^\/post\/(.+)\/edit$/i);
+        if (m) {
+            const id = m[1];
+            editor = <Editor postId={id}/>
+        } else {
+            editor = <Editor/>
         }
-    })
-;
+        ReactDOM.render(editor, editorElement);
+    }
+});

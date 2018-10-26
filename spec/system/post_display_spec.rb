@@ -44,4 +44,40 @@ feature "Post creation", type: :system do
     expect(page.find('#post-title')).to have_text(post[:title])
     expect(page.find('#post-content')).to have_text('My genius post', exact: false)
   end
+
+end
+
+feature "Edit post", type: :system do
+
+  given(:post_text) {
+    '<h2>New post</h2><p>My genius post</p>'
+  }
+  given(:post) {
+    attributes_for(:post)
+  }
+  given!(:post_id) {
+    Operations::AddPost.new(
+      title: post[:title],
+      excerpt: post[:excerpt],
+      slug: post[:slug],
+      content: post_text,
+    ).call.result.post.id
+  }
+
+  background do
+
+  end
+
+  scenario "post was opened for editing", :process_js => true do
+    visit "/post/#{post_id}/edit"
+
+    # wait_until { page.find('html')[:class].include?('ajax-active') }
+
+    expect(page.has_field?('title', with: post[:title])).to be_truthy
+    expect(page.has_field?('excerpt', with: post[:excerpt])).to be_truthy
+    expect(page.has_field?('slug', with: post[:slug])).to be_truthy
+    expect(page.has_field?('slug', with: post[:slug])).to be_truthy
+    expect(page.find('[name=content]').has_text?('My genius post')).to be_truthy
+  end
+
 end
