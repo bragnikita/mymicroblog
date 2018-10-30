@@ -19,6 +19,6 @@ services:
         - "3306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: nikita
-      MYSQL_DATABASE: "mymicroblog_test"
+      MYSQL_DATABASE: "mymicroblog_development"
       MYSQL_USER: mymicroblog
       MYSQL_PASSWORD: nikita

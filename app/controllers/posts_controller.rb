@@ -18,6 +18,19 @@ class PostsController < ApplicationController
 
   def update
     p = post_parameters
+    op = Operations::UpdatePost.new.from_params(p).call!.result
+    if request.xhr?
+      render json: {
+        result: 0,
+        redirect_to: "/p/#{op.model.slug}"
+      }
+    else
+      redirect_to "/p/#{op.model.slug}"
+    end
+  end
+
+  def update_old
+    p = post_parameters
     post = Post.find(p[:id])
     attrs_to_update = p.slice(:title, :excerpt, :slug)
     post.update!(attrs_to_update)
@@ -41,7 +54,7 @@ class PostsController < ApplicationController
     slug = params[:slug]
     Operations::AddPost.new({
                               title: params[:title],
-                              content: params[:content],
+                              content: params[:contents][:main],
                               excerpt: params[:excerpt],
                               slug: params[:slug],
                               published_at: Time.now

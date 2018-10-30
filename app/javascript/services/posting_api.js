@@ -14,14 +14,30 @@ export default class Service {
     }
 
     update(id, values) {
+        const post_values = {
+            ...values,
+            contents: {
+                main: values.content,
+                ...(values.contents ? values.contents : {}),
+            },
+            content: undefined,
+        };
         if (!id) {
             throw 'Id is not specified'
         }
-        return this.__post(`/post/${id}/update`, values);
+        return this.__post(`/post/${id}/update`, post_values);
     }
 
     create(values) {
-        return this.__post(`/posts/create`, values);
+        const post_values = {
+            ...values,
+            contents: {
+                main: values.content,
+                ...(values.contents ? values.contents : {}),
+            },
+            content: undefined,
+        };
+        return this.__post(`/posts/create`, post_values);
     }
 
     __get(url) {

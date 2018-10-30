@@ -38,20 +38,20 @@ RSpec.describe 'PostsController', type: :request do
   end
 
   context 'post update api test (/post/:id/update)' do
+    let(:attrs_to_update) {
+      {
+        title: 'Updated title',
+        text: 'updated source text'
+      }
+    }
+    let!(:model) {
+      Operations::AddPost.new(
+        attributes_for(:post,
+                       :title => 'Old title',
+                       :content => 'old source text'
+        )).call!.result.post
+    }
     describe 'when we updates post with text' do
-      let(:attrs_to_update) {
-        {
-          title: 'Updated title',
-          text: 'updated source text'
-        }
-      }
-      let!(:model) {
-        Operations::AddPost.new(
-          attributes_for(:post,
-                         :title => 'Old title',
-                         :content => 'old source text'
-          )).call!.result.post
-      }
       before {
         post "/post/#{model.id}/update", xhr: true, params: {
           title: attrs_to_update[:title],
@@ -74,7 +74,22 @@ RSpec.describe 'PostsController', type: :request do
     end
 
     describe 'when we calls is with non-existed id' do
-      it "returns 404"
+      before {
+        post "/post/#{model.id + 1}/update", xhr: true, params: {
+          title: attrs_to_update[:title],
+          contents: {
+            main: attrs_to_update[:text],
+          }
+        }
+      }
+      it "returns 404" do
+        expect(response).to have_http_status(404)
+        expected = {
+          result: 1,
+          message: match("requested object Post with id #{model.id + 1} was not found")
+        }
+        expect(get_body).to include(expected)
+      end
     end
   end
 end

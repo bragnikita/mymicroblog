@@ -15,4 +15,15 @@ class ApplicationController < ActionController::Base
   class PageViewModel
     attr_accessor :title
   end
+
+  rescue_from ActiveRecord::RecordNotFound, :with => :render_not_found
+
+  private
+
+  def render_not_found(e)
+    render status: :not_found, json: {
+      result: 1,
+      message: "requested object #{e.model} with id #{e.id} was not found"
+    }
+  end
 end

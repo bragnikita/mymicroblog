@@ -76,6 +76,7 @@ end
   end
 
   # config.include Helpers::RequestHelpers, type: :request
+  config.include RequestHelpers, type: :request
 end
 
 Shoulda::Matchers.configure do |config|
