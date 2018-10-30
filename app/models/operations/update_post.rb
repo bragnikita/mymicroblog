@@ -1,25 +1,52 @@
 module Operations
   class UpdatePost
 
+    attr_accessor :filter_factory
+
+    def initialize
+      @filter_factory = nil
+    end
+
+    def for_user(user)
+      if user.kind_of?(User)
+        @user_id = user.id
+      else
+        @user_id = user
+      end
+      self
+    end
+
     def from_params(parameters)
       @id = parameters[:id]
-      @mass_update = parameters.slice(:title, :slug, :excerpt)
+      @mass_update = parameters.slice(:title, :slug, :excerpt, :source_filter)
       @contents = parameters[:contents]
+      self
     end
 
     def call!
-      @result = self.doWork
-      unless @result
-        @result = OperationResult.ok(@model)
+      begin
+        @result = self.doWork
+        unless @result.kind_of?(Operations::OperationResult)
+          @result = OperationResult.ok(@model)
+        end
+        self
+      ensure
+        unless @result
+          @result = OperationResult.failed("Operations execution was interrupted with an excetion")
+        end
       end
     end
 
     def call
       begin
-        self.doWork
+        @result = self.doWork
+        unless @result.kind_of?(Operations::OperationResult)
+          @result = OperationResult.ok(@model)
+        end
       rescue Exception => e
         @result = OperationResult.failed(e, @model)
       end
+      self
     end
 
     def doWork
@@ -29,9 +56,22 @@ module Operations
       end
       if @contents
         if @contents.has_key? :main
-          @model.source_content_obj.update!({content: @contents[:main]})
-          @model.filtered_content_obj.update!({content: @contents[:main]})
+          source_content = @contents[:main]
+          filtered_content = filter_factory.nil? ?
+                               source_content :
+                               filter_factory
+                                 .create(@mass_update[:source_filter])
+                                 .filter(source_content)
+          @model.source_content_obj.update!({content: source_content})
+          @model.filtered_content_obj.update!({content: filtered_content})
         end
+      end
+
+      def result
+        if @result.nil?
+          raise 'Operation was not called yet'
+        end
+        @result
       end
     end
 
@@ -41,7 +81,7 @@ module Operations
   class OperationResult
     attr_accessor :model, :result, :message
 
-    def self.failed(explain, model)
+    def self.failed(explain, model = nil)
       message = explain
       if explain.kind_of?(Exception)
         message = explain.message
