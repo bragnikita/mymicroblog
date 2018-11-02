@@ -9,4 +9,6 @@
 
 import '../posting/editor_screen';
 import '../posting/post_display.scss';
+import 'bootstrap'
+import 'bootstrap/scss/bootstrap.scss'
 console.log('Hello World from Webpacker');

@@ -14,6 +14,7 @@ import FormControl from "@material-ui/core/FormControl";
 import OutlinedInput from "@material-ui/core/OutlinedInput";
 import InputLabel from "@material-ui/core/InputLabel/InputLabel";
 import classNames from 'classnames';
+import BsForm from './editor_form_bootstrap';
 
 const validators = [
     {name: 'title', validator: (val, values) => val ? undefined : 'Required field'},
@@ -225,10 +226,10 @@ export default class Form extends React.Component {
                     window.location.href = window.location.origin + result.redirect_to
                 });
         } else {
-            const action = values.post_state;
+            const action = values.action;
             posting.create(values)
                 .then((result) => {
-                    if (action == 'publish') {
+                    if (action === 'publish') {
                         window.location.href = window.location.origin + result.redirect_to
                     }
                     actions.setSubmitting(false);
@@ -250,7 +251,8 @@ export default class Form extends React.Component {
                 isEdit={this.isEdit()}
             >
                 {(props) => {
-                    return (<StyledFormComponents isEdit={this.isEdit()} {...props}/>);
+                    // return (<StyledFormComponents isEdit={this.isEdit()} {...props}/>);
+                    return (<BsForm isEdit={this.isEdit()} {...props}/>);
                 }}
             </Formik>
         );

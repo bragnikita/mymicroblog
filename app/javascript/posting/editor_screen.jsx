@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom'
 import $ from 'jquery'
 import './styles.scss'
 import Form from './editor_form';
+// import Form from './editor_form_bootstrap';
 
 
 $(() => {

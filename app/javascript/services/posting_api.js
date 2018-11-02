@@ -1,5 +1,28 @@
 import $ from 'jquery';
 
+const flattenForm = (raw_form) => {
+    const res = _flattenForm(raw_form);
+    delete res.action;
+    return res;
+};
+const _flattenForm = (raw_form) => {
+    const res = {};
+    Object.entries(raw_form).forEach(entry => {
+        let key = entry[0];
+        let value = entry[1];
+        let newValue = value;
+        if (typeof value === "object") {
+            if (Object.keys(value).length === 2 && 'label' in value && 'value' in value) {
+                newValue = value.value;
+            } else {
+                newValue = flattenForm(value)
+            }
+        }
+        res[key] = newValue;
+    });
+    return res;
+}
+
 export default class Service {
 
     get(search_arg) {
@@ -13,7 +36,8 @@ export default class Service {
         }
     }
 
-    update(id, values) {
+    update(id, raw_values) {
+        const values = flattenForm(raw_values);
         const post_values = {
             ...values,
             contents: {
@@ -28,7 +52,8 @@ export default class Service {
         return this.__post(`/post/${id}/update`, post_values);
     }
 
-    create(values) {
+    create(raw_values) {
+        const values = flattenForm(raw_values);
         const post_values = {
             ...values,
             contents: {
