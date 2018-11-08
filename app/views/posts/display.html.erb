@@ -1,11 +1,18 @@
 <div data-page="post--display" class="post__display--root">
-  <h1 id="post-title" class="p__title"><%= @post.title %></h1>
-  <div class="p__column">
-    <div id="post-content" class="p__content"><%= raw(@post.text) %></div>
+  <div class="box content">
+    <div>
+      <h1 id="post-title" class="p__title"><%= @post.title %></h1>
+      <div id="post-cover" class="p__cover"></div>
+      <div class="p__column">
+        <div id="post-content" class="p__content"><%= raw(@post.text) %></div>
+      </div>
+    </div>
+  </div>
+  <div class="box actions">
     <div id="post-action" class="p__actions">
       <% if @post.owner? %>
-          <a href="<%= @post.path_edit %>">
-          Edit</a>
+        <a class="btn btn-outline-primary" href="<%= @post.path_edit %>">
+          <i class="fa fa-pencil fa-2x mytheme-icon"></i></a>
       <% end %>
     </div>
   </div>

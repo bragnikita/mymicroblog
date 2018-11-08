@@ -1,0 +1,2 @@
+CREATE DATABASE IF NOT EXISTS mymicroblog_test DEFAULT COLLATE utf8_general_ci DEFAULT CHARACTER SET utf8;
+GRANT ALL PRIVILEGES ON *.* to mymicroblog@'%' IDENTIFIED BY 'nikita'

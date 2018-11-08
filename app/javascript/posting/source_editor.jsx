@@ -18,7 +18,6 @@ export default class Editor extends React.Component {
                 {...field}
                 minRows={10}
                 className="form-control"
-                name="content"
                 placeholder="Text"
                 ref={(ref) => this.inputRef = ref}/>
         )

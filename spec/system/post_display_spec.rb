@@ -5,8 +5,8 @@ RSpec.describe "displaying the post", type: :system do
   let!(:post) {
     Operations::AddPost.new(
       attributes_for(:post).merge(
-        :content => attributes_for(:post_content)[:content]
-      )).call.result.post
+        :contents => {main: attributes_for(:post_content)}
+      )).call!.result.post
   }
 
   it "displays all elements" do
@@ -34,11 +34,11 @@ feature "Post creation", type: :system do
     visit '/posts/new'
 
     fill_in 'title', with: post[:title]
-    fill_in 'content', with: post_text
+    fill_in 'contents.main.content', with: post_text
     fill_in 'excerpt', with: post[:excerpt]
     fill_in 'slug', with: post[:slug]
 
-    click_button 'send'
+    click_button 'publish'
 
     expect(page).to have_current_path("/p/#{post[:slug]}")
     expect(page.find('#post-title')).to have_text(post[:title])
@@ -60,8 +60,8 @@ feature "Edit post", type: :system do
       title: post[:title],
       excerpt: post[:excerpt],
       slug: post[:slug],
-      content: post_text,
-    ).call.result.post.id
+      contents: {main: {content: post_text}},
+    ).call!.result.post.id
   }
 
   background do
@@ -76,8 +76,7 @@ feature "Edit post", type: :system do
     expect(page.has_field?('title', with: post[:title])).to be_truthy
     expect(page.has_field?('excerpt', with: post[:excerpt])).to be_truthy
     expect(page.has_field?('slug', with: post[:slug])).to be_truthy
-    expect(page.has_field?('slug', with: post[:slug])).to be_truthy
-    expect(page.find('[name=content]').has_text?('My genius post')).to be_truthy
+    expect(page.find('[name="contents.main.content"]').has_text?('My genius post')).to be_truthy
   end
 
 end

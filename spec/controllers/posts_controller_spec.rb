@@ -48,7 +48,7 @@ RSpec.describe 'PostsController', type: :request do
       Operations::AddPost.new(
         attributes_for(:post,
                        :title => 'Old title',
-                       :content => 'old source text'
+                       :contents => { main: { content: 'old source text' } }
         )).call!.result.post
     }
     describe 'when we updates post with text' do
@@ -56,7 +56,7 @@ RSpec.describe 'PostsController', type: :request do
         post "/post/#{model.id}/update", xhr: true, params: {
           title: attrs_to_update[:title],
           contents: {
-            main: attrs_to_update[:text],
+            main: { content: attrs_to_update[:text] },
           }
         }
       }
@@ -67,8 +67,8 @@ RSpec.describe 'PostsController', type: :request do
         updated_post = Post.find(model.id)
 
         expect(updated_post.title).to eq(attrs_to_update[:title])
-        expect(updated_post.source_content).to eq(attrs_to_update[:text])
-        expect(updated_post.filtered_content).to eq(attrs_to_update[:text])
+        expect(updated_post.main_content_text).to eq(attrs_to_update[:text])
+        expect(updated_post.main_content_filtered_text).to eq(attrs_to_update[:text])
       end
 
     end

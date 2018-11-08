@@ -1,0 +1,9 @@
+<% content_for :title do %>
+  <%= @page.title %>
+<% end %>
+<% content_for :content do %>
+  <div class="layout-config central_column">
+    <%= yield %>
+  </div>
+<% end %>
+<%= render template: "layouts/application" %>

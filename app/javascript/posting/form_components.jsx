@@ -2,6 +2,7 @@ import React from 'react';
 import classNames from 'classnames';
 import './form_components.scss';
 import Select from "react-select";
+import _ from 'lodash';
 
 const ERROR_CLASSES = {
     input_text: 'border-danger',
@@ -49,11 +50,18 @@ export const FormSelector = ({ field, form, input, className, ...rest}) => {
     const showLabel = true;
     const label = rest.label || rest.placeholder;
 
+    let value = field.value;
+    if (typeof value !== 'object') {
+        value = _.find(rest.options, {'value': value})
+    }
+
+
     return (
         <div className={classNames(`x-form-component`, { 'error': showError })}>
             <span className="x-form-component__label">{showLabel ? label : null}</span>
             <Select
                 {...rest}
+                value={value}
                 onChange={(option) => {
                     form.setFieldValue(field.name, option)
                 }}

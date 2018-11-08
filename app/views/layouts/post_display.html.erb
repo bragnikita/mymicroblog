@@ -1,10 +1,16 @@
 <% content_for :title do %>
-    <%= @post.title %>
+  <%= @post.title %>
 <% end %>
 <% content_for :styles do %>
-    <%= raw(@post.styles) %>
+  <%= raw(@post.styles) %>
 <% end %>
 <% content_for :content do %>
-    <%= yield %>
+  <div data-name="post-display">
+    <div class="column">
+      <div class="content-wrapper">
+        <%= yield %>
+      </div>
+    </div>
+  </div>
 <% end %>
 <%= render template: "layouts/application" %>

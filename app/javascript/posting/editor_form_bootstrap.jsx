@@ -10,7 +10,7 @@ export default class Form extends React.Component {
 
 
     render() {
-        const { handleSubmit, setFieldValue } = this.props;
+        const { handleSubmit, setFieldValue, status, isEdit } = this.props;
         return (
             <form className="form container">
                 <div className="form-group row">
@@ -48,7 +48,7 @@ export default class Form extends React.Component {
                         )}/>
                     </div>
                     <div className="col-xs-6 col-sm-auto form-group" style={{width: 170}}>
-                        <FastField name="source_filter" render={(props) => (
+                        <FastField name="contents.main.content_format" render={(props) => (
                             <FormSelector
                                 {...props}
                                 options={[
@@ -62,7 +62,7 @@ export default class Form extends React.Component {
                 </div>
                 <div className="row form-group">
                     <div className="col">
-                        <FastField name="content" render={(props) => (
+                        <FastField name="contents.main.content" render={(props) => (
                             <FormComponentWrapper>
                                 <Editor {...props} />
                             </FormComponentWrapper>
@@ -70,11 +70,18 @@ export default class Form extends React.Component {
                     </div>
                 </div>
                 <div className="row d-flex justify-content-start">
-                    <div className="col">
-                        <button type="submit"
+                    <div className="col-auto">
+                        <button type="submit" title="publish"
                             className="btn btn-lg btn-success"
                             onClick={(e) => { setFieldValue('action', 'publish', false); handleSubmit(e)} }
-                        >Publish</button>
+                        >{isEdit ? 'Update' : 'Publish'}</button>
+                        <button type="submit" title="save"
+                                className="btn btn-lg btn-secondary ml-2"
+                                onClick={(e) => { setFieldValue('action', 'save', false); handleSubmit(e)} }
+                        >{'Save'}</button>
+                    </div>
+                    <div className="col d-flex align-items-center">
+                        <span className="text-secondary">{ status || '' }</span>
                     </div>
                 </div>
             </form>

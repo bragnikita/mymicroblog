@@ -25,7 +25,7 @@ const _flattenForm = (raw_form) => {
 
 export default class Service {
 
-    get(search_arg) {
+    get(search_arg, content_roles = []) {
         if (!search_arg) {
             throw 'Post id is not specified';
         }
@@ -38,37 +38,22 @@ export default class Service {
 
     update(id, raw_values) {
         const values = flattenForm(raw_values);
-        const post_values = {
-            ...values,
-            contents: {
-                main: values.content,
-                ...(values.contents ? values.contents : {}),
-            },
-            content: undefined,
-        };
         if (!id) {
             throw 'Id is not specified'
         }
-        return this.__post(`/post/${id}/update`, post_values);
+        return this.__post(`/post/${id}/update`, values);
     }
 
     create(raw_values) {
         const values = flattenForm(raw_values);
-        const post_values = {
-            ...values,
-            contents: {
-                main: values.content,
-                ...(values.contents ? values.contents : {}),
-            },
-            content: undefined,
-        };
-        return this.__post(`/posts/create`, post_values);
+        return this.__post(`/posts/create`, values);
     }
 
-    __get(url) {
+    __get(url, query = {}) {
         return $.ajax({
             url: url,
-            method: 'get'
+            method: 'get',
+            params: query,
         });
     }
 

@@ -3,8 +3,14 @@ require 'rails_helper'
 RSpec.describe Operations::AddPost, type: :model do
 
   describe 'when all parameters specified' do
+    let(:text) { 'some text '}
     let(:attrs) {
-      attributes_for(:post).merge(attributes_for(:post_content).slice(:content))
+      content_attrs = attributes_for(:post_content, content: text)
+      attributes_for(:post).merge({
+                                    contents: {
+                                      main: content_attrs.slice(:content, :content_format)
+                                    }
+                                  })
     }
     let(:user) {
       create(:user)
@@ -23,9 +29,26 @@ RSpec.describe Operations::AddPost, type: :model do
     end
     it 'creates new post' do
       expect(reloaded_post.title).to eq(attrs[:title])
-      expect(reloaded_post.contents).to have(2).items
-      expect(reloaded_post.contents.map(&:type)).to contain_exactly('source', 'filtered')
-      expect(reloaded_post.contents.map(&:content)).to all(not_blank)
+      expect(reloaded_post.contents).to have(1).items
+      expect(reloaded_post.contents.map(&:role)).to contain_exactly('main')
+      expect(reloaded_post.contents.first.content).to eq(text)
+    end
+
+    describe 'when no contents specified' do
+      let(:attrs) {
+        attributes_for(:post)
+      }
+      it 'returns correct result' do
+        expect {operation}.not_to raise_error
+        expect(operation.result.ok?).to be_truthy
+        expect(operation.result.error?).to be_falsey
+        expect(operation.result.post).to be_an_instance_of Post
+      end
+      it 'has 1 main content' do
+        expect(reloaded_post.contents).to have(1).items
+        expect(reloaded_post.contents.map(&:role)).to contain_exactly('main')
+        expect(reloaded_post.contents.first.content).to be_falsey
+      end
     end
   end
 
@@ -40,6 +63,8 @@ RSpec.describe Operations::AddPost, type: :model do
       expect(operation.result.post.owner).to eq(user)
     end
   end
+
+
 end
 
 
@@ -54,9 +79,12 @@ RSpec.describe Operations::UpdatePost, type: :model do
         title: 'new title',
         slug: '/new_slug',
         excerpt: 'some excerpt',
-        source_filter: 'markdown',
+        post_type: 'blogpost',
         contents: {
-          main: 'some html contents'
+          main: {
+            content_format: 'plain',
+            content: 'some plain contents',
+          }
         }
       }
     }
@@ -75,9 +103,9 @@ RSpec.describe Operations::UpdatePost, type: :model do
         expect(reloaded_post.title).to eq(new_attrubutes[:title])
         expect(reloaded_post.slug).to eq(new_attrubutes[:slug])
         expect(reloaded_post.excerpt).to eq(new_attrubutes[:excerpt])
-        expect(reloaded_post.source_filter).to eq(new_attrubutes[:source_filter])
-        expect(reloaded_post.source_content).to eq(new_attrubutes[:contents][:main])
-        expect(reloaded_post.filtered_content).to eq(new_attrubutes[:contents][:main])
+        expect(reloaded_post.post_type).to eq(new_attrubutes[:post_type])
+        expect(reloaded_post.main_content_text).to eq(new_attrubutes[:contents][:main][:content])
+        expect(reloaded_post.main_content.filtered_content).to eq(new_attrubutes[:contents][:main][:content])
       end
 
       it 'will return correct result' do

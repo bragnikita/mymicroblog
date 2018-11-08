@@ -10,5 +10,7 @@
 import '../posting/editor_screen';
 import '../posting/post_display.scss';
 import 'bootstrap'
-import 'bootstrap/scss/bootstrap.scss'
+import './../posting/styles.scss'
+import '@fortawesome/fontawesome-free/css/all.css'
+import '@fortawesome/fontawesome-free/css/v4-shims.css'
 console.log('Hello World from Webpacker');

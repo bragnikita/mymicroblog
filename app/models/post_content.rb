@@ -2,12 +2,14 @@
 #
 # Table name: post_contents
 #
-#  id         :bigint(8)        not null, primary key
-#  content    :text(65535)
-#  type       :string(255)
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  post_id    :bigint(8)        not null
+#  id               :bigint(8)        not null, primary key
+#  content          :text(65535)
+#  content_format   :string(255)
+#  filtered_content :text(65535)
+#  role             :string(255)
+#  created_at       :datetime         not null
+#  updated_at       :datetime         not null
+#  post_id          :bigint(8)        not null
 #
 # Indexes
 #
@@ -22,4 +24,6 @@ class PostContent < ApplicationRecord
   PostContent.inheritance_column = 'object_type'
 
   belongs_to :post, class_name: "Post", optional: false
+
+  validates_presence_of :role
 end

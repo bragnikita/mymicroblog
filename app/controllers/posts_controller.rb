@@ -1,12 +1,13 @@
 class PostsController < ApplicationController
 
   def index
-
-    render 'index'
+    @index = IndexViewModel.new(Post.total_index(params))
+    render 'index', layout: 'layouts/config'
   end
 
   def new
-    render 'new'
+    @page.title = "New post"
+    render 'new', layout: 'layouts/config'
   end
 
 
@@ -29,36 +30,9 @@ class PostsController < ApplicationController
     end
   end
 
-  def update_old
-    p = post_parameters
-    post = Post.find(p[:id])
-    attrs_to_update = p.slice(:title, :excerpt, :slug)
-    post.update!(attrs_to_update)
-    if p.dig(:contents, :main)
-      post.source_content_obj.update!({content: p[:contents][:main]})
-      post.filtered_content_obj.update!({content: p[:contents][:main]})
-    end
-
-    slug = post.slug
-    if request.xhr?
-      render json: {
-        result: 0,
-        redirect_to: "/p/#{slug}"
-      }
-    else
-      redirect_to "/p/#{slug}"
-    end
-  end
-
   def create
     slug = params[:slug]
-    Operations::AddPost.new({
-                              title: params[:title],
-                              content: params[:contents][:main],
-                              excerpt: params[:excerpt],
-                              slug: params[:slug],
-                              published_at: Time.now
-                            }).call
+    Operations::AddPost.new(post_parameters).call
     if request.xhr?
       render json: {
         result: 0,
@@ -76,6 +50,7 @@ class PostsController < ApplicationController
   end
 
   def get
+    contents_roles = params.fetch(:roles, '').split(',')
     post = Post.find(params[:id])
     render json: {
       object: {
@@ -83,7 +58,13 @@ class PostsController < ApplicationController
         title: post.title,
         slug: post.slug,
         excerpt: post.excerpt,
-        content: post.source_content
+        post_type: post.post_type,
+        contents: post.contents_for(contents_roles).each_with_object({}) do |c, hash|
+          hash[c.role] = {
+            content: c.content,
+            content_format: c.content_format,
+          }
+        end,
       }
     }
   end
@@ -91,7 +72,17 @@ class PostsController < ApplicationController
   private
 
   def post_parameters
-    params.permit(:id, :title, :slug, :excerpt, contents: {})
+    params.permit(:id, :title, :slug, :excerpt, :post_type, contents: {})
+  end
+
+  class IndexViewModel
+    attr_accessor :relation, :collection
+
+    def initialize(relation)
+      @relation = relation
+      @collection = relation.map{|p| ViewModel.new(p)}
+    end
+
   end
 
   class ViewModel
@@ -101,8 +92,12 @@ class PostsController < ApplicationController
       @post = post
     end
 
+    def model
+      @post
+    end
+
     def text
-      @post.filtered_content
+      @post.main_content_filtered_text
     end
 
     def title
@@ -119,8 +114,11 @@ class PostsController < ApplicationController
       true
     end
 
-    def path_edit
+    def path_view
+      "/p/#{post.slug}"
+    end
 
+    def path_edit
       "/post/#{post.id}/edit"
     end
   end

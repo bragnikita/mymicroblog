@@ -1,3 +1,42 @@
+$font-size-base: 1rem;
+
+$h1-font-size: $font-size-base * 2;
+$h2-font-size: $font-size-base * 1.75;
+$h3-font-size: $font-size-base * 1.5;
+$h4-font-size: $font-size-base * 1.25;
+$h5-font-size: $font-size-base * 1.1;
+
+@import "~bootstrap/scss/bootstrap";
+
+$mytheme-color: #6ea6d6;
+$mytheme-icon-color: $mytheme-color;
+
+.fa.mytheme-icon {
+  color: $mytheme-icon-color;
+}
+
+.filler {
+  flex-grow: 1;
+}
+
+.less {
+  flex-grow: 0;
+}
+
+.stretch {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+}
+
+.box {
+  box-shadow: 4px 2px 14px 0px #b1b1b1;
+  background-color: white;
+  padding: 5px 15px;
+}
+
 [data-name=editor-component] {
   form {
     display: flex;
@@ -17,6 +56,50 @@
     font-size: 48px;
   }
 }
+
+[data-name=posts-index] {
+
+}
+
+[data-name=post-display] {
+  width: 100%;
+  background-color: $mytheme-color;
+  padding-bottom: 10px;
+  @extend .stretch;
+  .column {
+    max-width: 700px;
+    margin: 0 auto;
+    .content-wrapper {
+      margin: 0 5px;
+      min-height: 300px;
+      position: relative;
+    }
+  }
+  .post__display--root {
+    margin: 0 10px 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+  .p__column {
+    flex-grow: 1;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .content.box {
+    margin-bottom: 10px;
+  }
+}
+
 .right_icon {
   margin-left: 5px;
+}
+
+.layout-config.central_column {
+  @extend .container;
+  & > h1, & > h2, & > h3, & > h4, & > h5, & > h6 {
+    @extend .col;
+  }
 }

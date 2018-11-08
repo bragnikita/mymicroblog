@@ -1,1 +1,22 @@
-<h1>Index</h1>
+<h4>Posts index</h4>
+<div class="d-flex justify-content-end">
+  <a class="btn btn-outline-primary mb-1" data-action="add"><i class="fa fa-plus"></i> New</a>
+</div>
+<div data-name="posts-index">
+  <div class="list-group">
+    <% for post in @index.collection %>
+      <div class="list-group-item">
+        <div class="row justify-content-between align-items-center" id="<%= "item-#{post.model.id}"%>">
+          <a href="<%= post.path_view %>" class="col-xs-12 col-sm-auto">
+            <%= post.title %>
+          </a>
+          <div class="col-xs-12 col-sm-auto less">
+            <a class="btn btn-outline-primary" data-action="edit" href="<%= post.path_edit %>">
+              <i class="fa fa-pencil fa-1x"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
