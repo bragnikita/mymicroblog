@@ -11,4 +11,10 @@ Rails.application.routes.draw do
     post '/posts/create', action: :create
   end
 
+  controller :images do
+    get '/images', action: :index
+    post '/images/add', action: :add
+    delete '/image/:id', action: :destroy
+  end
+
 end

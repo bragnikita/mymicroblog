@@ -10,7 +10,25 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_10_13_103311) do
+ActiveRecord::Schema.define(version: 2018_11_09_001636) do
+
+  create_table "folders", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "title"
+    t.bigint "owner_id", null: false
+    t.index ["owner_id"], name: "index_folders_on_owner_id"
+  end
+
+  create_table "images", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci", force: :cascade do |t|
+    t.string "link", null: false
+    t.string "title"
+    t.bigint "folder_id"
+    t.bigint "uploaded_by_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["folder_id"], name: "index_images_on_folder_id"
+    t.index ["uploaded_by_id"], name: "index_images_on_uploaded_by_id"
+  end
 
   create_table "post_contents", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci", force: :cascade do |t|
     t.text "content"
@@ -44,6 +62,9 @@ ActiveRecord::Schema.define(version: 2018_10_13_103311) do
     t.datetime "updated_at", null: false
   end
 
+  add_foreign_key "folders", "users", column: "owner_id", on_delete: :cascade
+  add_foreign_key "images", "folders"
+  add_foreign_key "images", "users", column: "uploaded_by_id", on_delete: :nullify
   add_foreign_key "post_contents", "posts", on_delete: :cascade
   add_foreign_key "posts", "users", column: "owner_id"
 end

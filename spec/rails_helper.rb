@@ -67,6 +67,10 @@ RSpec.configure do |config|
   end
 
   config.around(:each) do |example|
+    example.run
+  end
+
+  config.around(:each) do |example|
     if example.metadata[:keep_data]
       example.run
     else

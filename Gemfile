@@ -23,6 +23,7 @@ gem 'jbuilder', '~> 2.5'
 #
 # ActiveRecord extensions
 gem 'kaminari'
+gem 'carrierwave', '~> 1.0'
 
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
