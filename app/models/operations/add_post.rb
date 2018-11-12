@@ -8,6 +8,15 @@ module Operations
       @user_id = attributes[:user_id]
     end
 
+    def self.from_params(params = {})
+      array_of_contents = params.fetch(:contents, [])
+      map_of_contents = {}
+      array_of_contents.each {|c| map_of_contents[c[:role]] = c}
+      res = params.clone
+      res[:contents] = map_of_contents
+      AddPost.new(res)
+    end
+
     def call!
       self.call
     end

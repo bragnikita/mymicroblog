@@ -1,0 +1,20 @@
+:local(.item) {
+  margin: 10px 0;
+}
+:local(.item img) {
+
+}
+:local(.overlay) {
+  position: absolute;
+  width: 100%;
+  top: 0;
+  bottom: 0;
+  display: none;
+  background-color: rgba(0, 123, 255, 0.25);
+}
+:local(.image_wrapper) {
+  position: relative;
+}
+:local(.image_wrapper:hover .overlay) {
+  display: block;
+}

@@ -9,6 +9,7 @@
 
 import '../posting/editor_screen';
 import '../posting/post_display.scss';
+import '../images/images_index_screen'
 import 'bootstrap'
 import './../posting/styles.scss'
 import '@fortawesome/fontawesome-free/css/all.css'
