@@ -1,15 +1,9 @@
 import $ from 'jquery';
 import Posting from './posting_api';
+import Images from './images_api';
 
 const posting = new Posting();
-
-
-$.ajaxSetup({
-    beforeSend: function (xhr) {
-        const token = $('meta[name="csrf-token"]').attr('content');
-        xhr.setRequestHeader('X-CSRF-Token', token);
-    }
-});
+const images = new Images();
 
 $(document).bind("ajaxStart", function(){
     $('html').addClass('ajax-active');
@@ -19,4 +13,5 @@ $(document).bind("ajaxStart", function(){
 
 export  {
     posting,
+    images,
 }

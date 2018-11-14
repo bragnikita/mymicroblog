@@ -1,4 +1,4 @@
-import $ from 'jquery';
+import request from './agent';
 
 const flattenForm = (raw_form) => {
     const res = _flattenForm(raw_form);
@@ -11,7 +11,7 @@ const _flattenForm = (raw_form) => {
         let key = entry[0];
         let value = entry[1];
         let newValue = value;
-        if (typeof value === "object") {
+        if (value && typeof value === "object") {
             if (Object.keys(value).length === 2 && 'label' in value && 'value' in value) {
                 newValue = value.value;
             } else {
@@ -21,7 +21,7 @@ const _flattenForm = (raw_form) => {
         res[key] = newValue;
     });
     return res;
-}
+};
 
 export default class Service {
 
@@ -50,19 +50,11 @@ export default class Service {
     }
 
     __get(url, query = {}) {
-        return $.ajax({
-            url: url,
-            method: 'get',
-            params: query,
-        });
+        return request.get(url).query(query)
     }
 
     __post(url, data) {
-        return $.ajax({
-            url: url,
-            method: 'post',
-            data: data,
-        });
+        return request.post(url).send(data);
     }
 
 }

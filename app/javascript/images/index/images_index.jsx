@@ -1,6 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
-import styles from './styles.scss';
+import styles from './images_index_styles.scss';
 
 export default class ImagesIndex extends React.Component {
 

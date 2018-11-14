@@ -11,24 +11,10 @@ $h5-font-size: $font-size-base * 1.1;
 $mytheme-color: #6ea6d6;
 $mytheme-icon-color: $mytheme-color;
 
+@import "../util/styles";
+
 .fa.mytheme-icon {
   color: $mytheme-icon-color;
-}
-
-.filler {
-  flex-grow: 1;
-}
-
-.less {
-  flex-grow: 0;
-}
-
-.stretch {
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
 }
 
 .box {

@@ -2,11 +2,11 @@ import $ from 'jquery';
 import ReactDOM from "react-dom";
 
 const mountComponent = (mountPointSelector, componentInstance) => {
-  const element = $(mountPointSelector);
-  if (!element) {
+  const elements = $(mountPointSelector);
+  if (elements.length === 0) {
       return;
   }
-  ReactDOM.render(componentInstance, element[0]);
+  ReactDOM.render(componentInstance, elements[0]);
 };
 
 export {

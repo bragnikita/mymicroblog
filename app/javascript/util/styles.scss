@@ -1,0 +1,50 @@
+
+.filler {
+  flex-grow: 1;
+}
+
+.less {
+  flex-grow: 0;
+}
+
+.stretch {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+}
+
+.no-padding {
+  padding-left: 0;
+  padding-right: 0;
+}
+.form-control-narrow {
+  padding: 0 6px;
+  height: 30px;
+}
+.btn-circle {
+  width: 32px;
+  height: 28px;
+  text-align: center;
+  padding: 5px 0;
+  font-size: 13px;
+  line-height: 1;
+  border-radius: 15px;
+}
+.btn-circle.btn-lg {
+  width: 50px;
+  height: 50px;
+  padding: 10px 16px;
+  font-size: 18px;
+  line-height: 1.33;
+  border-radius: 25px;
+}
+.btn-circle.btn-xl {
+  width: 70px;
+  height: 70px;
+  padding: 10px 16px;
+  font-size: 24px;
+  line-height: 1.33;
+  border-radius: 35px;
+}

@@ -50,11 +50,12 @@ export default class Form extends React.Component {
             return;
         }
         posting.get(this.props.postId, {roles: 'main'})
-            .then((result) => {
+            .then((response) => {
+                const body = response.body;
                 this.setState({
                     dataLoaded: true,
                     initialValues: {
-                        ...result.object,
+                        ...body.object,
                     },
                 });
 
@@ -65,9 +66,9 @@ export default class Form extends React.Component {
         const action = values.action;
         if (this.props.postId) {
             posting.update(this.props.postId, values)
-                .then((result) => {
+                .then(() => {
                     if (action === 'publish') {
-                        window.location.href = window.location.origin + result.redirect_to
+                        window.location.href = window.location.origin + '/p/' + values.slug
                     } else {
                         actions.setStatus('Saved');
                         actions.setSubmitting(false);
@@ -75,9 +76,10 @@ export default class Form extends React.Component {
                 });
         } else {
             posting.create(values)
-                .then((result) => {
+                .then((response) => {
+                    const body = response.body;
                     if (action === 'publish') {
-                        window.location.href = window.location.origin + result.redirect_to
+                        window.location.href = window.location.origin + body.redirect_to
                     } else {
                         actions.setStatus('Saved')
                         actions.setSubmitting(false);

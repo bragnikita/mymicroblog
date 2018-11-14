@@ -18,6 +18,10 @@ class ApplicationController < ActionController::Base
 
   rescue_from ActiveRecord::RecordNotFound, :with => :render_not_found
 
+  def current_user
+    User.admin
+  end
+
   private
 
   def render_not_found(e)

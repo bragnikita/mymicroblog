@@ -22,4 +22,8 @@ class Folder < ApplicationRecord
   validates :name, uniqueness: {scope: :owner, case_sensitive: false}
   has_many :images, class_name: 'Image', dependent: :destroy, foreign_key: 'folder_id'
 
+  scope :owned_by, -> (owner_id) do
+    where("owner_id = ?", owner_id)
+  end
+
 end

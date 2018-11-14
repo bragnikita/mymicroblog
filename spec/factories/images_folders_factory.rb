@@ -1,5 +1,5 @@
 FactoryBot.define do
-  factory :folder do
+  factory :folder, class: Folder do
     title {Faker::Music.album}
     name {Faker::Lorem.unique.word.downcase}
     association :owner, factory: :admin

@@ -17,4 +17,11 @@ Rails.application.routes.draw do
     delete '/image/:id', action: :destroy
   end
 
+  controller :folders do
+    get '/folders', action: :index
+    post '/folder/:id', action: :update
+    put '/folders', action: :create
+    delete '/folder/:id', action: :destroy
+  end
+
 end
