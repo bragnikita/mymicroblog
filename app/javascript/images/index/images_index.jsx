@@ -4,8 +4,28 @@ import styles from './images_index_styles.scss';
 
 export default class ImagesIndex extends React.Component {
 
+    state = {
+        items: [],
+    };
+
+    reload = () => {
+        if (this.props.fetch) {
+            this.props.fetch().then((images) => {
+                this.setState({
+                    items: images.map((i) => {
+                        return {
+                            id: i.id,
+                            orig_url: i.url,
+                            thumb_url: i.url
+                        }
+                    })
+                })
+            })
+        }
+    };
+
     createItems = () => {
-        return this.props.items.map((item) => {
+        return this.state.items.map((item) => {
             return (
                 <div key={item.id} className={classNames(styles.item, "col-lg-auto col-md-3 col-sm-4 col-xs-6")}>
                     <a href={item.orig_url} target="_blank">

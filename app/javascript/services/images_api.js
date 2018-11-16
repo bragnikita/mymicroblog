@@ -18,6 +18,10 @@ export default class Service {
         return request.delete(`/folder/${id}`)
     }
 
+    listFolderImages(folder_id) {
+        return request.get('/images/list').query({folder: folder_id})
+    }
+
     uploadImage(file, folder_id, title) {
         return request.put('/images')
             .attach('image[link]', file)

@@ -1,10 +1,25 @@
 class ImagesController < ApplicationController
 
   def index
-    if request.xhr?
-      render json: {}
-    end
     render 'index', layout: 'layouts/config'
+  end
+
+  def list
+    if params.has_key?(:folder)
+      images = Image.where(folder_id: params[:folder])
+    else
+      images = Image.all
+    end
+    render json: {
+      result: 0,
+      list: images.map do |image|
+        {
+          id: image.id,
+          url: image.link.url,
+          title: image.title
+        }
+      end
+    }
   end
 
   def add

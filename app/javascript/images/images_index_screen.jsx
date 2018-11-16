@@ -12,79 +12,55 @@ const Folders = withHandlers({
     requestFolders: () => () => images.listFolders().then((r) => r.body.list),
 })(FoldersIndex);
 
-const folder1 = {
-    id: 1,
-    name: 'common',
-    items: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => {
-        return {
-            id: i,
-            filename: `image_${i}.jpg`,
-            thumb_url: `https://via.placeholder.com/300x200.jpg?text=image_${i}`,
-            orig_url: `https://via.placeholder.com/1024x786.jpg?text=image_${i}`,
-        }
-    }),
-};
-const folder2 = {
-    id: 2,
-    name: "trash",
-    items: [],
-};
-
-const folders = { 1: folder1, 2: folder2 };
-
 class ImageIndexScreen extends React.Component {
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            items: null,
-            folder: null
-        }
-    }
-
-    requestFolders = () => {
-        return images.listFolders().then((response) => response.body.list);
+    state = {
+        folder: null,
     };
+
     handleSelect = (folder) => {
         this.setState({
             folder: folder,
-            // items: folders[folder.id].items,
+        }, () => {
+            this.images_list.reload();
         })
     };
 
     upload = (file) => {
-        return images.uploadImage(file.data, this.state.folder.id, file.name).then((response) => response.body.object)
+        return images.uploadImage(file.data, this.state.folder.id, file.name).then((response) => {
+            return response.body.object
+        })
+    };
+
+    fetchImages = () => {
+        if (this.state.folder) {
+            return images.listFolderImages(this.state.folder.id).then((response) => {
+                return response.body.list
+            })
+        }
+        return Promise.resolve([]);
     };
 
     render() {
-        const {items, folder} = this.state;
+        const {folder} = this.state;
         return (
             <div className="image_index_screen">
                 <div className="container-fluid">
                     <Folders
-                        requestFolders={this.requestFolders}
                         handleSelect={this.handleSelect}
                     />
                 </div>
-                <Uploader uploadSingle={this.upload}/>
+                <Uploader uploadSingle={this.upload} onUploadedSingle={() => this.images_list.reload()}/>
                 {folder &&
                 <React.Fragment>
                     <div className="container-fluid text-left">{folder && folder.name || ''}</div>
-                    <Index items={items || []}/>
+                    <Index ref={(ref) => this.images_list = ref} fetch={this.fetchImages}/>
                 </React.Fragment>
                 }
             </div>
         );
     }
-
-    componentDidMount = () => {
-        const folder = folders[this.props.currentId];
-        this.setState({
-            folder: folder,
-            items: folder.items,
-        })
-    }
 }
 
 
-utils.mountComponent('#image-index-screen', <ImageIndexScreen currentId={1}/>);
+utils.mountComponent('#image-index-screen', <ImageIndexScreen/>);

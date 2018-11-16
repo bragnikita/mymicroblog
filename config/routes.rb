@@ -13,6 +13,7 @@ Rails.application.routes.draw do
 
   controller :images do
     get '/images', action: :index
+    get '/images/list', action: :list
     put '/images', action: :add
     delete '/image/:id', action: :destroy
   end

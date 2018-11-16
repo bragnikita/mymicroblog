@@ -5,12 +5,9 @@ import styles from './folders-styles.scss';
 
 class AddRenameFolderForm extends Component {
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            name: props.name || '',
-        };
-    }
+    state = {
+        name: this.props.name || '',
+    };
 
     onChange = (e) => {
         this.setState({
@@ -54,12 +51,10 @@ class AddRenameFolderForm extends Component {
 }
 
 class AddRenameFolderLine extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            mode: 'none',
-        }
-    }
+
+    state = {
+        mode: 'none',
+    };
 
     reset = () => {
         this.setState({mode: 'none'});
@@ -122,14 +117,11 @@ class AddRenameFolderLine extends Component {
 
 export default class FoldersIndex extends Component {
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            folders: [],
-            mode: null,
-            current_id: props.initFolderId,
-        }
-    }
+    state = {
+        folders: [],
+        mode: null,
+        current_id: this.props.initFolderId,
+    };
 
     handleSelect = _.memoize((folder) => () => {
         this.setState({current_id: folder.id});

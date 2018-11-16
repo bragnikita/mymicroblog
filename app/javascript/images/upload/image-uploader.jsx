@@ -2,17 +2,17 @@ import React from 'react';
 import Dropzone from 'react-dropzone';
 import styles from './image-upload-styles.scss';
 import classnames from 'classnames';
-import {withHandlers} from 'recompose';
 import update from 'immutability-helper';
 
 class UploadZone extends React.Component {
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            files: []
-        }
-    }
+    static defaultProps = {
+        onUploadedSingle: () => {},
+    };
+
+    state = {
+        files: []
+    };
 
     handleDrop = (files) => {
         this.setState({
@@ -47,6 +47,8 @@ class UploadZone extends React.Component {
                     f.status = 2;
                     this.setState({
                         files: update(this.state.files, {[i]: {status: {$set: 2}}})
+                    }, () => {
+                        this.props.onUploadedSingle(f)
                     })
                 })
             });
@@ -84,10 +86,4 @@ class UploadZone extends React.Component {
     }
 }
 
-export default withHandlers({
-    // uploadSingle: (props) => (file) => {
-    //     return new Promise((resolve) => {
-    //         setTimeout(() => resolve(), 2000)
-    //     });
-    // }
-})(UploadZone);
+export default UploadZone;
