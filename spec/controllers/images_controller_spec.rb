@@ -13,13 +13,13 @@ RSpec.describe 'ImagesController', type: :request do
 
   end
 
-  context 'image add api test (/images/add)' do
+  context 'image add api test (PUT /images)' do
     describe 'when we uploads image' do
       before(:context) {
         @file = fixture_file_upload('images/common.jpg', 'image/jpg')
         @folder = create(:folder)
 
-        post '/images/add', params: {image: {link: @file, folder_id: @folder.id}}
+        put '/images', params: {image: {link: @file, folder_id: @folder.id}}
       }
       it "responses with OK" do
         expect(response).to have_http_status(200)

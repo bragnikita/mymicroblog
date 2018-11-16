@@ -127,7 +127,7 @@ export default class FoldersIndex extends Component {
         this.state = {
             folders: [],
             mode: null,
-            current_id: null,
+            current_id: props.initFolderId,
         }
     }
 
@@ -140,7 +140,7 @@ export default class FoldersIndex extends Component {
         return this.state.folders.map((f) => {
             const classNames = classes(
                 "item btn-outline-secondary col-auto",
-                {[styles.selected]: f.id === this.state.current_id }
+                {[styles.selected]: f.id === this.state.current_id}
             );
             return (
                 <button key={f.id} className={classNames} onClick={this.handleSelect(f)}>
@@ -151,8 +151,24 @@ export default class FoldersIndex extends Component {
     };
 
     currentFolderName = () => {
-        const currentFolder = _.find(this.state.folders, {id: this.props.currentFolderId});
+        const currentFolder = _.find(this.state.folders, {id: this.state.current_id});
         return currentFolder ? currentFolder.name : null;
+    };
+
+    createNew = (name) => {
+        if (this.props.createNew) {
+            return this.props.createNew(name).then(this.updateList)
+        } else {
+            return Promise.resolve()
+        }
+    };
+
+    rename = (name) => {
+        if (this.props.rename) {
+            return this.props.rename(this.state.current_id, name).then(this.updateList)
+        } else {
+            return Promise.resolve()
+        }
     };
 
     render() {
@@ -167,7 +183,11 @@ export default class FoldersIndex extends Component {
                     </div>
                     <div className="row mt-2">
                         <div className="col-xs-12 col-lg-6 no-padding border-bottom p-1">
-                            <AddRenameFolderLine name={this.currentFolderName()}/>
+                            <AddRenameFolderLine
+                                name={this.currentFolderName()}
+                                createNew={this.createNew}
+                                rename={this.rename}
+                            />
                         </div>
                     </div>
                 </div>
@@ -177,8 +197,14 @@ export default class FoldersIndex extends Component {
 
     updateList = () => {
         this.props.requestFolders().then((folders) => {
+            let currentFolder = _.find(folders, {id: this.state.current_id});
+            if (!currentFolder) {
+                currentFolder = _.first(folders);
+                currentFolder && this.props.handleSelect(currentFolder);
+            }
             this.setState({
                 folders: folders,
+                current_id: currentFolder ? currentFolder.id : null,
             })
         });
     };

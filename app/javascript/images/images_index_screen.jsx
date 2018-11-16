@@ -1,8 +1,16 @@
 import React from 'react';
 import Index from './index/images_index';
 import * as utils from '../util/react_utils';
-import Folders from './folders/folders_index';
+import FoldersIndex from './folders/folders_index';
+import {images} from './../services/apis';
+import {withHandlers} from 'recompose';
+import Uploader from './upload/image-uploader';
 
+const Folders = withHandlers({
+    createNew: () => images.createFolder,
+    rename: () => images.renameFolder,
+    requestFolders: () => () => images.listFolders().then((r) => r.body.list),
+})(FoldersIndex);
 
 const folder1 = {
     id: 1,
@@ -35,13 +43,17 @@ class ImageIndexScreen extends React.Component {
     }
 
     requestFolders = () => {
-        return Promise.resolve([folder1, folder2]);
+        return images.listFolders().then((response) => response.body.list);
     };
     handleSelect = (folder) => {
         this.setState({
-            folder: folders[folder.id],
-            items: folders[folder.id].items,
+            folder: folder,
+            // items: folders[folder.id].items,
         })
+    };
+
+    upload = (file) => {
+        return images.uploadImage(file.data, this.state.folder.id, file.name).then((response) => response.body.object)
     };
 
     render() {
@@ -50,11 +62,11 @@ class ImageIndexScreen extends React.Component {
             <div className="image_index_screen">
                 <div className="container-fluid">
                     <Folders
-                        currentFolderId={folder && folder.id}
                         requestFolders={this.requestFolders}
                         handleSelect={this.handleSelect}
                     />
                 </div>
+                <Uploader uploadSingle={this.upload}/>
                 {folder &&
                 <React.Fragment>
                     <div className="container-fluid text-left">{folder && folder.name || ''}</div>
