@@ -7,7 +7,8 @@ import update from 'immutability-helper';
 class UploadZone extends React.Component {
 
     static defaultProps = {
-        onUploadedSingle: () => {},
+        onUploadedSingle: () => {
+        },
     };
 
     state = {
@@ -15,15 +16,16 @@ class UploadZone extends React.Component {
     };
 
     handleDrop = (files) => {
+        const newFiles = files.map((f) => {
+            return {
+                data: f,
+                name: f.name,
+                status: 0,
+                preview: URL.createObjectURL(f)
+            }
+        });
         this.setState({
-            files: files.map((f) => {
-                return {
-                    data: f,
-                    name: f.name,
-                    status: 0,
-                    preview: URL.createObjectURL(f)
-                };
-            }),
+            files: this.state.files.concat(newFiles),
         });
     };
 
@@ -57,19 +59,32 @@ class UploadZone extends React.Component {
     };
 
     render() {
+        const files_to_display = this.state.files.filter((file) => file.status !== 2);
         return (
             <React.Fragment>
                 <div className={classnames(styles.wrapper, this.props.className, 'w-100')}>
-                    <Dropzone accept="image/*" onDrop={this.handleDrop} className={styles.dropzone}>
-                        <div className={styles.innerWrapper}>
-                            {this.state.files.map((file) => {
-                                return (<div key={file.name}>{file.name} ({file.status})</div>)
-                            })}
-                            {this.state.files.length > 0 &&
-                            <div className="w-100 text-center">
-                                <button className="btn btn-success" onClick={this.handleUploadAll}>Upload</button>
+                    <Dropzone accept="image/*" onDrop={this.handleDrop}
+                              className={classnames(styles.dropzone, "d-flex flex-column")}>
+                        <div
+                            className={classnames(styles.innerWrapper, "d-flex filler flex-column py-2 container-fluid")}>
+                            <div className={classnames(styles.previewContainer, "filler mb-3 align-items-center row")}>
+                                {files_to_display.map((file, i) => {
+                                    return (
+                                        <div key={file.name + '_' + i} className="col-6 col-sm-4 col-md-3">
+                                            <div className="position-relative">
+                                                {file.status === 1 && <div className="curtain"><i
+                                                    className="fa fa-circle-o-notch fa-spin fa-3x fa-fw"/></div>}
+                                                <img alt="preview" src={file.preview} className="preview img-thumbnail">
+                                                </img>
+                                            </div>
+                                        </div>)
+                                })}
                             </div>
-                            }
+                            <div className="w-100 text-center bottom-button">
+                                <button className="btn btn-success" onClick={this.handleUploadAll}
+                                        disabled={files_to_display.length === 0}>Upload
+                                </button>
+                            </div>
                         </div>
                     </Dropzone>
                 </div>

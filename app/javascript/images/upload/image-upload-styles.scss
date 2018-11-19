@@ -1,9 +1,28 @@
+@import '../../util/mixins';
+
 :local(.wrapper) {
-
+  .curtain {
+    @include stretch;
+    @include center-in-block;
+    background-color: rgba(0, 0, 255, 0.18);
+  }
 }
+
 :local(.dropzone) {
+  width: 100%;
+  min-height: 200px;
+  border: 1px dashed black;
+  .bottom-button {
 
+  }
 }
+
 :local(.innerWrapper) {
 
+}
+
+:local(.previewContainer) {
+  img.preview {
+
+  }
 }

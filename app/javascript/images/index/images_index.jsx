@@ -27,7 +27,7 @@ export default class ImagesIndex extends React.Component {
     createItems = () => {
         return this.state.items.map((item) => {
             return (
-                <div key={item.id} className={classNames(styles.item, "col-lg-auto col-md-3 col-sm-4 col-xs-6")}>
+                <div key={item.id} className={classNames(styles.item, "col-xl-2 col-lg-2 col-md-3 col-sm-4 col-xs-6")}>
                     <a href={item.orig_url} target="_blank">
                         <div className={styles.image_wrapper}>
                             <div className={styles.overlay} />

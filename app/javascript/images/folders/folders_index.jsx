@@ -174,7 +174,7 @@ export default class FoldersIndex extends Component {
                         {items}
                     </div>
                     <div className="row mt-2">
-                        <div className="col-xs-12 col-lg-6 no-padding border-bottom p-1">
+                        <div className="col-xs-12 col-lg-6 no-h-padding border-bottom p-1">
                             <AddRenameFolderLine
                                 name={this.currentFolderName()}
                                 createNew={this.createNew}
