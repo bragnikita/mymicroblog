@@ -9,6 +9,10 @@ class UploadZone extends React.Component {
     static defaultProps = {
         onUploadedSingle: () => {
         },
+        browserApi: {
+            createPreview: (f) => URL.createObjectURL(f),
+            clearPreview: (url) => URL.revokeObjectURL(url)
+        }
     };
 
     state = {

@@ -123,6 +123,10 @@ export default class FoldersIndex extends Component {
         current_id: this.props.initFolderId,
     };
 
+    defaultProps = {
+        handleSelect: (newFolder) => {}
+    };
+
     handleSelect = _.memoize((folder) => () => {
         this.setState({current_id: folder.id});
         this.props.handleSelect(folder)
@@ -208,4 +212,9 @@ export default class FoldersIndex extends Component {
     componentDidMount = () => {
         this.updateList();
     }
+}
+
+export {
+    AddRenameFolderForm,
+    AddRenameFolderLine
 }
