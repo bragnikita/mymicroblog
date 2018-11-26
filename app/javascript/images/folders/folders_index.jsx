@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import PropTypes from 'prop-types';
 import classes from 'classnames';
 import _ from 'lodash';
 import styles from './folders-styles.scss';
@@ -30,9 +31,11 @@ class AddRenameFolderForm extends Component {
     render() {
         return (
             <div className={classes("w-100 d-flex align-items-center", this.props.className)}>
-                <input className="form-control form-control-narrow filler mr-2" type="text" value={this.state.name}
+                <input name="input_folder_name"
+                    className="form-control form-control-narrow filler mr-2" type="text" value={this.state.name}
                        onChange={this.onChange}/>
                 <button
+                    name="apply"
                     className="btn btn-success btn-circle mr-1"
                     onClick={this.onApply}
                     disabled={!this.isValidName()}
@@ -40,6 +43,7 @@ class AddRenameFolderForm extends Component {
                     <i className="fa fa-chevron-circle-down"/>
                 </button>
                 <button
+                    name="cancel"
                     className="btn btn-warning btn-circle"
                     onClick={this.onCancel}
                 >
@@ -51,6 +55,12 @@ class AddRenameFolderForm extends Component {
 }
 
 class AddRenameFolderLine extends Component {
+
+    static propTypes = {
+      createNew: PropTypes.func,
+      rename: PropTypes.func,
+      name: PropTypes.string,
+    };
 
     state = {
         mode: 'none',
@@ -81,6 +91,7 @@ class AddRenameFolderLine extends Component {
             return (
                 <div className="w-100 d-flex justify-content-end">
                     <button
+                        name="rename"
                         className="btn btn-outline-secondary btn-circle mr-1"
                         onClick={() => this.setState({mode: 'rename'})}
                         disabled={!this.props.name}
@@ -88,6 +99,7 @@ class AddRenameFolderLine extends Component {
                         <i className="fa fa-i-cursor"/>
                     </button>
                     <button
+                        name="add"
                         className="btn btn-success btn-circle"
                         onClick={() => this.setState({mode: 'add'})}
                     >
