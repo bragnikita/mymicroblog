@@ -21,7 +21,7 @@ class PostsController < ApplicationController
     p = post_parameters
     op = Operations::UpdatePost.new.from_params(p).call!.result
     if request.xhr?
-      render json: {
+      render status: 200, json: {
         result: 0,
         redirect_to: "/p/#{op.model.slug}"
       }
@@ -34,7 +34,7 @@ class PostsController < ApplicationController
     slug = params[:slug]
     Operations::AddPost.new(post_parameters).call
     if request.xhr?
-      render json: {
+      render status: 200, json: {
         result: 0,
         redirect_to: "/p/#{slug}"
       }

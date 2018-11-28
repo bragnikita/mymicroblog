@@ -1,6 +1,4 @@
 import React from 'react';
-// import {} from 'formik';
-import _ from 'lodash';
 import TextArea from 'react-textarea-autosize';
 
 

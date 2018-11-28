@@ -1,5 +1,6 @@
 import React from 'react'
 import './styles.scss'
+import URI from 'urijs';
 import {Formik} from 'formik';
 import {posting} from '../services/apis';
 import BsForm from './editor_form_bootstrap';
@@ -68,7 +69,7 @@ export default class Form extends React.Component {
             posting.update(this.props.postId, values)
                 .then(() => {
                     if (action === 'publish') {
-                        window.location.href = window.location.origin + '/p/' + values.slug
+                        window.location.href = new URI().segment(["p", values.slug]);
                     } else {
                         actions.setStatus('Saved');
                         actions.setSubmitting(false);
@@ -79,7 +80,7 @@ export default class Form extends React.Component {
                 .then((response) => {
                     const body = response.body;
                     if (action === 'publish') {
-                        window.location.href = window.location.origin + body.redirect_to
+                        window.location.href = body.redirect_to;
                     } else {
                         actions.setStatus('Saved')
                         actions.setSubmitting(false);

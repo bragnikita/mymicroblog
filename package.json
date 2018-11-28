@@ -7,6 +7,7 @@
     "babel-preset-react": "^6.24.1",
     "bootstrap": "^4.1.3",
     "classnames": "^2.2.6",
+    "codemirror": "^5.42.0",
     "formik": "^1.3.1",
     "immutability-helper": "^2.8.1",
     "jquery": "^3.3.1",
@@ -20,6 +21,7 @@
     "reactstrap": "^6.5.0",
     "recompose": "^0.30.0",
     "superagent": "^4.0.0-beta.5",
+    "urijs": "^1.19.1",
     "yarn": "^1.10.1"
   },
   "devDependencies": {

@@ -1,0 +1,32 @@
+@import "../../util/mixins";
+
+:local(.overlay) {
+  @include center-on-top();
+  display: none;
+  background-color: rgba(0, 123, 255, 0.25);
+}
+
+:local(.image_wrapper) {
+  position: relative;
+}
+
+:local(.image_wrapper:hover .overlay) {
+  display: flex;
+}
+
+:local(.overlay_btn) {
+  color: black;
+  position: relative;
+  font-size: 26px;
+  border-radius: 14px;
+  background-color: #ffffffa3;
+}
+
+:local(.overlay_btn:hover) {
+  background-color: #969696;
+}
+
+:local(.overlay_btn span) {
+  font-size: 14px;
+  @include center-on-top();
+}

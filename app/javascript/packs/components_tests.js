@@ -1,6 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
 import $ from 'jquery';
+import URI from 'urijs';
 import '../util/common_imports';
 import folders_index from '../images/folders/testcases_folders_index';
 
@@ -42,8 +43,8 @@ const tests = {
 };
 window.tests = tests;
 
-const urlParams = new URLSearchParams(window.location.search);
-const testName = urlParams.get('test');
+const urlParams = new URI().search(true);
+const testName = urlParams['test'];
 if (testName) {
     const func = _.get(window.tests, testName);
     if (func) {
