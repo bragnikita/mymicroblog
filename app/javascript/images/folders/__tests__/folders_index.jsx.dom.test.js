@@ -1,6 +1,7 @@
 import React from 'react';
 import {mount} from 'enzyme';
 import {AddRenameFolderForm, AddRenameFolderLine} from '../folders_index';
+import FoldersIndex from "../folders_index";
 
 describe('AddRenameFolderLine (full DOM)', () => {
 
@@ -16,7 +17,7 @@ describe('AddRenameFolderLine (full DOM)', () => {
         let component, props;
         describe('rendering', () => {
             beforeEach(() => {
-                props = { name: 'new_folder'};
+                props = {name: 'new_folder'};
                 component = mountComponent(subject(props))
             });
             test('mode: add', (done) => {
@@ -69,5 +70,40 @@ describe('AddRenameFolderLine (full DOM)', () => {
                 component.unmount();
             }
         })
+    });
+});
+
+describe('FoldersIndex (Full DOM)', () => {
+
+    describe('callbacks', () => {
+
+        const subject = (props = {}) => {
+            const basicProps = {
+                requestFolders: jest.fn().mockReturnValue(Promise.resolve([
+                    {id: 1, name: 'folder1'}, {id: 2, name: 'folder2'}
+                ])),
+            };
+            return (<FoldersIndex {...basicProps} {...props} />);
+        };
+
+        const mountComponent = (component) => {
+            return mount(component);
+        };
+
+        it('loads items when mounted', () => {
+            const component = mountComponent(subject());
+            console.log(component.debug());
+            expect(component.prop('requestFolders').mock.calls.length).toBe(1);
+        });
+        it('calls handleSelect callback when clicked on the folder element', () => {
+           const props = {
+               handleSelect: jest.fn(),
+           };
+           const component = mountComponent(subject(props));
+           setTimeout(() => {
+               component.find('[name="folder"]').filter('[key=1]').first().simulate('click');
+               expect(props.handleSelect.mock.calls[0][0]).toHaveProperty('id', '1')
+           }, 100);
+        });
     });
 });

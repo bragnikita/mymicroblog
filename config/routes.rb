@@ -25,4 +25,8 @@ Rails.application.routes.draw do
     delete '/folder/:id', action: :destroy
   end
 
+  controller :components_test do
+    get '/components_test/open', action: :open_component
+  end
+
 end

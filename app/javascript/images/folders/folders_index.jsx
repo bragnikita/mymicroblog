@@ -129,13 +129,21 @@ class AddRenameFolderLine extends Component {
 
 export default class FoldersIndex extends Component {
 
+    static propTypes = {
+        handleSelect: PropTypes.func,
+        requestFolders: PropTypes.func.isRequired,
+        rename: PropTypes.func,
+        createNew: PropTypes.func,
+        initFolderId: PropTypes.string,
+    };
+
     state = {
         folders: [],
         mode: null,
         current_id: this.props.initFolderId,
     };
 
-    defaultProps = {
+    static defaultProps = {
         handleSelect: (newFolder) => {}
     };
 
@@ -151,7 +159,7 @@ export default class FoldersIndex extends Component {
                 {[styles.selected]: f.id === this.state.current_id}
             );
             return (
-                <button key={f.id} className={classNames} onClick={this.handleSelect(f)}>
+                <button key={f.id} className={classNames} onClick={this.handleSelect(f)} name="folder">
                     <i className="fa fa-folder-o"/> {f.name}
                 </button>
             )

@@ -16,10 +16,6 @@
 
 <body>
 <%= content_for?(:content) ? yield(:content) : yield %>
-<% if request.original_fullpath.split('?')[0] == '/components_test' %>
-  <%= javascript_pack_tag 'components_tests', 'data-turbolinks-track': 'reload' %>
-<% else %>
-  <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
-<% end %>
+<%= javascript_pack_tag 'components_tests', 'data-turbolinks-track': 'reload' %>
 </body>
 </html>

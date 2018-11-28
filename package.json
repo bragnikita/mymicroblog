@@ -25,11 +25,16 @@
   "devDependencies": {
     "@fortawesome/fontawesome-free": "^5.5.0",
     "babel-jest": "^23.6.0",
+    "babel-register": "^6.26.0",
+    "chai": "^4.2.0",
     "enzyme": "^3.7.0",
     "enzyme-adapter-react-16": "^1.7.0",
     "enzyme-to-json": "^3.3.4",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^23.6.0",
+    "mocha": "^5.2.0",
+    "puppeteer": "^1.10.0",
+    "sinon": "^7.1.1",
     "webpack-dev-server": "2.11.2"
   },
   "jest": {
@@ -38,7 +43,8 @@
     ],
     "moduleFileExtensions": [
       "js",
-      "jsx"
+      "jsx",
+      "json"
     ],
     "moduleDirectories": [
       "node_modules"
@@ -53,6 +59,7 @@
     ]
   },
   "scripts": {
-    "test": "jest"
+    "jest": "jest",
+    "mocha": "mocha"
   }
 }
