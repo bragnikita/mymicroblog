@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe Operations::AddPost, type: :model do
 
   describe 'when all parameters specified' do
-    let(:text) { 'some text '}
+    let(:text) {'some text '}
     let(:attrs) {
       content_attrs = attributes_for(:post_content, content: text)
       attributes_for(:post).merge({
@@ -61,6 +61,35 @@ RSpec.describe Operations::AddPost, type: :model do
     }
     it 'creates user with default admin user' do
       expect(operation.result.post.owner).to eq(user)
+    end
+  end
+
+  describe 'when has transformer' do
+    let(:user) {
+      User.admin
+    }
+    before(:each) do
+      @chain = double(Libs::ContentTransformers::TransformersChain, :call => 'After transformation')
+      @transformer =  double(Libs::ContentTransformers::TransformerChainFactory, :create => @chain)
+    end
+    let!(:operation) {
+      op = Operations::AddPost.new(attributes_for(:post)
+                                     .merge(
+                                       {
+                                         contents: {main: {
+                                           content_format: 'markdown',
+                                           content: 'Before transformation'
+                                         }}}
+                                     ))
+      op.transformations = @transformer
+      op.call
+    }
+    it 'should call transformer factory with "markdown" request' do
+      expect(@transformer).to receive(:create).with('markdown')
+      # expect(@chain).to receive(:call).with('Before transformation')
+    end
+    it 'should save "After transformation"' do
+      expect(operation.result.post.main_content_filtered_text).to eq('After transformation')
     end
   end
 

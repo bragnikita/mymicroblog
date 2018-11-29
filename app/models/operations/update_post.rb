@@ -23,6 +23,11 @@ module Operations
       self
     end
 
+    def set_filter_factory(factory)
+      @filter_factory = factory
+      self
+    end
+
     def call!
       begin
         @result = self.doWork
@@ -63,7 +68,7 @@ module Operations
                                source_content :
                                filter_factory
                                  .create(content[:content_format])
-                                 .filter(source_content)
+                                 .call(source_content)
           @model.content_for_or_create!(role).update!({content: source_content, filtered_content: filtered_content, content_format: content[:content_format]})
         end
       end

@@ -1,11 +1,17 @@
 module Operations
   class AddPost
     attr_reader :attributes, :post
-    attr_accessor :user_id
+    attr_accessor :user_id, :transformations
 
     def initialize(attributes = {})
       @attributes = attributes
       @user_id = attributes[:user_id]
+      @transformations = nil
+    end
+
+    def set_filter_factory(factory)
+      @transformations = factory
+      self
     end
 
     def self.from_params(params = {})
@@ -49,8 +55,14 @@ module Operations
     private
 
     def translate_source(content)
-      # TODO
-      content[:content]
+      source = content[:content]
+      format = content[:content_format]
+      if transformations && format
+        chain = transformations.create(format)
+        chain.call(source)
+      else
+        source
+      end
     end
 
     class Result

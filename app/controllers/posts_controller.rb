@@ -19,7 +19,7 @@ class PostsController < ApplicationController
 
   def update
     p = post_parameters
-    op = Operations::UpdatePost.new.from_params(p).call!.result
+    op = Operations::UpdatePost.new.from_params(p).set_filter_factory(filter_factory).call!.result
     if request.xhr?
       render status: 200, json: {
         result: 0,
@@ -32,7 +32,7 @@ class PostsController < ApplicationController
 
   def create
     slug = params[:slug]
-    Operations::AddPost.new(post_parameters).call
+    Operations::AddPost.new(post_parameters).set_filter_factory(filter_factory).call!
     if request.xhr?
       render status: 200, json: {
         result: 0,
@@ -70,6 +70,10 @@ class PostsController < ApplicationController
   end
 
   private
+
+  def filter_factory
+    Libs::ContentTransformers::TransformerChainFactory.new
+  end
 
   def post_parameters
     params.permit(:id, :title, :slug, :excerpt, :post_type, contents: {})
