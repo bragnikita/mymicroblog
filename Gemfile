@@ -24,6 +24,13 @@ gem 'jbuilder', '~> 2.5'
 # ActiveRecord extensions
 gem 'kaminari'
 gem 'carrierwave', '~> 1.0'
+
+# Authentication
+gem 'bcrypt', '~> 3.1.11'
+gem 'jwt'
+
+# Logic
+gem 'simple_command'
 gem 'kramdown'
 
 # Use Capistrano for deployment

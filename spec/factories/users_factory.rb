@@ -7,12 +7,14 @@ FactoryBot.define do
   end
   factory :admin, class: User do
     initialize_with do
-      User.find_or_create_by(
+      user = User.find_or_create_by(
         :admin => true,
         :username => 'admin',
-        :password => '1234',
         :email => 'admin@myblog.org',
       )
+      user.password = '12345'
+      user.save
+      user
     end
   end
 end

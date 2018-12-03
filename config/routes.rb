@@ -29,4 +29,8 @@ Rails.application.routes.draw do
     get '/components_test/open', action: :open_component
   end
 
+  controller :auth do
+    post '/auth', action: :create
+    get '/auth/test', action: :test
+  end
 end

@@ -1,5 +1,7 @@
 class PostsController < ApplicationController
 
+  before_action :access_admin, only: [:index]
+
   def index
     @index = IndexViewModel.new(Post.total_index(params))
     render 'index', layout: 'layouts/config'
@@ -19,7 +21,7 @@ class PostsController < ApplicationController
 
   def update
     p = post_parameters
-    op = Operations::UpdatePost.new.from_params(p).set_filter_factory(filter_factory).call!.result
+    op = UpdatePost.new.from_params(p).set_filter_factory(filter_factory).call!.result
     if request.xhr?
       render status: 200, json: {
         result: 0,
@@ -32,7 +34,7 @@ class PostsController < ApplicationController
 
   def create
     slug = params[:slug]
-    Operations::AddPost.new(post_parameters).set_filter_factory(filter_factory).call!
+    AddPost.new(post_parameters).set_filter_factory(filter_factory).call!
     if request.xhr?
       render status: 200, json: {
         result: 0,

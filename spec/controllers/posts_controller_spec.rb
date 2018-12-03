@@ -24,7 +24,7 @@ RSpec.describe 'PostsController', type: :request do
       before {
         attrs = attributes_for(:post, :slug => 'my_first_post',
                                :title => 'My first post')
-        Operations::AddPost.new(attrs).call
+        AddPost.new(attrs).call
         get '/p/my_first_post'
       }
       it 'displays the post' do
@@ -45,7 +45,7 @@ RSpec.describe 'PostsController', type: :request do
       }
     }
     let!(:model) {
-      Operations::AddPost.new(
+      AddPost.new(
         attributes_for(:post,
                        :title => 'Old title',
                        :contents => { main: { content: 'old source text' } }

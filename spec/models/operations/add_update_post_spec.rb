@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Operations::AddPost, type: :model do
+RSpec.describe AddPost, type: :model do
 
   describe 'when all parameters specified' do
     let(:text) {'some text '}
@@ -16,7 +16,7 @@ RSpec.describe Operations::AddPost, type: :model do
       create(:user)
     }
     let(:operation) {
-      Operations::AddPost.new(attrs.merge(:user_id => user.id)).call
+      AddPost.new(attrs.merge(:user_id => user.id)).call
     }
     let(:reloaded_post) {
       Post.find(operation.result.post.id)
@@ -57,7 +57,7 @@ RSpec.describe Operations::AddPost, type: :model do
       User.admin
     }
     let(:operation) {
-      Operations::AddPost.new(attributes_for(:post)).call
+      AddPost.new(attributes_for(:post)).call
     }
     it 'creates user with default admin user' do
       expect(operation.result.post.owner).to eq(user)
@@ -73,7 +73,7 @@ RSpec.describe Operations::AddPost, type: :model do
       @transformer =  double(Libs::ContentTransformers::TransformerChainFactory, :create => @chain)
     end
     let!(:operation) {
-      op = Operations::AddPost.new(attributes_for(:post)
+      op = AddPost.new(attributes_for(:post)
                                      .merge(
                                        {
                                          contents: {main: {
@@ -97,7 +97,7 @@ RSpec.describe Operations::AddPost, type: :model do
 end
 
 
-RSpec.describe Operations::UpdatePost, type: :model do
+RSpec.describe UpdatePost, type: :model do
   context 'when all parameters are specified' do
 
     let(:orig_post) {
@@ -121,7 +121,7 @@ RSpec.describe Operations::UpdatePost, type: :model do
     describe "when all parameters are correct" do
 
       let(:operation) {
-        Operations::UpdatePost.new.from_params(new_attrubutes.merge({id: orig_post.id}))
+        UpdatePost.new.from_params(new_attrubutes.merge({id: orig_post.id}))
       }
       before {
         operation.call!
@@ -148,7 +148,7 @@ RSpec.describe Operations::UpdatePost, type: :model do
 
     describe "when original post is not exists" do
       let(:operation) {
-        Operations::UpdatePost.new.from_params(new_attrubutes.merge({id: orig_post.id + 1}))
+        UpdatePost.new.from_params(new_attrubutes.merge({id: orig_post.id + 1}))
       }
       it 'will raise error' do
         expect {operation.call!}.to raise_error(ActiveRecord::RecordNotFound)

@@ -3,7 +3,7 @@ require 'capybara/dsl'
 
 RSpec.describe "displaying the post", type: :system do
   let!(:post) {
-    Operations::AddPost.new(
+    AddPost.new(
       attributes_for(:post).merge(
         :contents => {main: attributes_for(:post_content)}
       )).call!.result.post
@@ -56,7 +56,7 @@ feature "Edit post", type: :system do
     attributes_for(:post)
   }
   given!(:post_id) {
-    Operations::AddPost.new(
+    AddPost.new(
       title: post[:title],
       excerpt: post[:excerpt],
       slug: post[:slug],
