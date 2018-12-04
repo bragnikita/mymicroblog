@@ -12,12 +12,12 @@ RSpec::Matchers.define :be_ordered_by do |attribute|
     result = true
     reverse_indicator = "_desc"
     if attribute =~ /#{reverse_indicator}/
-      symbol = attribute.gsub(/#{reverse_indicator}/,'').to_sym
-      sorted = actual.sort{ |a,b| b.send(symbol) <=> a.send(symbol)}
+      symbol = attribute.gsub(/#{reverse_indicator}/, '').to_sym
+      sorted = actual.sort {|a, b| b.send(symbol) <=> a.send(symbol)}
     else
-      sorted = actual.sort{ |a,b| a.updated_at <=> b.updated_at}
+      sorted = actual.sort {|a, b| a.updated_at <=> b.updated_at}
     end
-    sorted.each_with_index do |a,i|
+    sorted.each_with_index do |a, i|
       result = false unless actual[i] == a
     end
     result # return true or false for this matcher.
@@ -33,5 +33,15 @@ RSpec::Matchers.define :be_ordered_by do |attribute|
 
   description do
     "be a sorted by #{attribute}"
+  end
+end
+
+RSpec::Matchers.define :has_path do |path|
+  match do |url|
+    begin
+      return path.eql?(URI(url).path)
+    rescue URI::InvalidURIError
+      return false
+    end
   end
 end

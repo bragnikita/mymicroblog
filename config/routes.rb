@@ -32,5 +32,6 @@ Rails.application.routes.draw do
   controller :auth do
     post '/auth', action: :create
     get '/auth/test', action: :test
+    get '/logout', action: :destroy
   end
 end

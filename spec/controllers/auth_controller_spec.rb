@@ -2,13 +2,84 @@ require 'rails_helper'
 
 RSpec.describe 'Auth Requests', type: :request do
   # tests AuthController
+  def email
+    'aaaa@bbbb.com'
+  end
 
-  let(:email) {'aaaa@bbbb.com'}
-  let(:password) {'1234567890'}
+  def password
+    '1234567890'
+  end
 
-  describe 'when signing in' do
+  describe 'Signing in' do
+    before do
+      create(:user, email: email, password: password, admin: true)
+    end
+    describe 'when credentials are correct' do
+      before do
+        post '/auth', params: {user: {login_id: email, password: password}}, xhr: true
+      end
+      let(:token) {cookies[:access_token]}
+
+      it('returns ok') {expect(response).to have_http_status :ok}
+      it('has access token') {expect(token).to be_present}
+      it('has useable token') do
+        expect(UsersManagement::AuthorizeRequest.call(token)).to be_success
+      end
+    end
+    describe 'when return_to is specified' do
+      describe 'xhr request'
+      describe 'page request'
+    end
+    describe 'when credentials are incorrect' do
+      before do
+        post '/auth', params: {user: {login_id: email, password: 'not_matching_password'}}
+      end
+      let(:token) {cookies[:access_token]}
+
+      it('returns 401') {expect(response).to have_http_status :unauthorized}
+      it('there is no access token') {expect(token).not_to be_present}
+    end
+    describe 'when already authenticated' do
+      before do
+        post '/auth', params: {user: {login_id: email, password: password}}
+      end
+      let(:token) {cookies[:access_token]}
+
+      it('returns ok') do
+        post '/auth', params: {user: {login_id: email, password: password}}
+        expect(response).to have_http_status :ok
+      end
+      it('access token was not changed') do
+        old_token = cookies[:access_token]
+        post '/auth', params: {user: {login_id: email, password: password}}
+        expect(cookies[:access_token]).to eq(old_token)
+      end
+    end
+  end
+
+  describe 'Sign out' do
+    let(:token) {cookies[:access_token]}
+    describe 'when signed in' do
+      before do
+        post '/auth', params: {user: {login_id: email, password: password}}
+      end
+      it 'removes cookie' do
+        get '/logout'
+        expect(response).to have_http_status :ok
+        expect(token).not_to be_present
+      end
+    end
+    describe 'when signed out' do
+      it 'do nothing' do
+        expect(token).not_to be_present
+        get '/logout'
+        expect(response).to have_http_status :ok
+        expect(token).not_to be_present
+      end
+    end
 
   end
+
   describe 'Access the resource' do
     before do
       create(:user, email: email, password: password, admin: true)
@@ -17,15 +88,15 @@ RSpec.describe 'Auth Requests', type: :request do
 
     describe 'when accessing as admin' do
       before {get '/auth/test?role=admin'}
-      it('allows access') { expect(response).to have_http_status(:ok) }
+      it('allows access') {expect(response).to have_http_status(:ok)}
     end
     describe 'when accessing as any user' do
       before {get '/auth/test?role=authenticated'}
-      it('allows access') { expect(response).to have_http_status(:ok) }
+      it('allows access') {expect(response).to have_http_status(:ok)}
     end
     describe 'when accessing as anonymous' do
       before {get '/auth/test'}
-      it('allows access') { expect(response).to have_http_status(:ok) }
+      it('allows access') {expect(response).to have_http_status(:ok)}
     end
   end
 
@@ -36,11 +107,20 @@ RSpec.describe 'Auth Requests', type: :request do
     end
     describe 'when accessing as any user' do
       before {get '/auth/test?role=admin'}
-      it('restricts access') { expect(response).to have_http_status(:forbidden) }
+      it('restricts access') {expect(response).to have_http_status(:forbidden)}
     end
-    describe 'when accessing as any anonymous' do
-      before {cookies[:access_token] =nil; get '/auth/test?role=admin'}
-      it('restricts access') { expect(response).to have_http_status(:unauthorized) }
+    describe 'when accessing admin area as any anonymous' do
+      describe 'and ajax' do
+        before {cookies[:access_token] = nil; get '/auth/test?role=admin', xhr: true}
+        it('restricts access') {expect(response).to have_http_status(:unauthorized)}
+      end
+      describe 'and page request' do
+        before {cookies[:access_token] = nil; get '/auth/test?role=admin', xhr: false}
+        it('redirects to login') do
+          expect(response).to have_http_status(302)
+          expect(response.get_header('Location')).to has_path('/login')
+        end
+      end
     end
   end
 end

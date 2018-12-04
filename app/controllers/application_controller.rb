@@ -19,6 +19,7 @@ class ApplicationController < ActionController::Base
 
   rescue_from ActiveRecord::RecordNotFound, :with => :render_not_found
   rescue_from ApiErrors::AccessForbidden, :with => :render_access_forbidden
+  rescue_from ApiErrors::AuthorizationRequired, :with => :redirect_to_login
 
   def current_user
     @user ||= authenticate
@@ -29,7 +30,8 @@ class ApplicationController < ActionController::Base
   end
 
   def access_admin
-    fail ApiErrors::AccessForbidden unless authenticated? and current_user.is_admin?
+    fail ApiErrors::AuthorizationRequired unless authenticated?
+    fail ApiErrors::AccessForbidden unless current_user.is_admin?
   end
 
   def access_all
@@ -37,7 +39,7 @@ class ApplicationController < ActionController::Base
   end
 
   def access_authenticated
-    fail ApiErrors::AccessForbidden unless authenticated?
+    fail ApiErrors::AuthorizationRequired unless authenticated?
   end
 
   private
@@ -52,9 +54,18 @@ class ApplicationController < ActionController::Base
   def render_access_forbidden(e)
     status = authenticated? ? :forbidden : :unauthorized
     if request.xhr?
-        render json: '', status: status
+      head status
     else
       render :file => 'public/422.html', status: status
+    end
+  end
+
+  def redirect_to_login
+    session[:return_to] = request.fullpath
+    if request.xhr?
+      head :unauthorized
+    else
+      redirect_to '/login'
     end
   end
 

@@ -5,7 +5,7 @@ class AuthController < ApplicationController
 
   def create
     if authenticated?
-      render status: :ok, json: nil and return
+      head :ok and return
     end
     email = auth_params[:login_id]
     password = auth_params[:password]
@@ -13,12 +13,22 @@ class AuthController < ApplicationController
     if cmd.success?
       jwt = cmd.result
       set_jwt_cookie jwt
-      render status: :ok, json: nil
-      # render status: :created, json: {access_token: jwt}
+      return_to = session[:return_to] || '/'
+      session[:return_to] = nil
+      if request.xhr?
+        render status: :ok, json: { redirect_to: return_to }
+      else
+        redirect_to return_to
+      end
     else
       remove_jwt_cookie
-      render status: :ok, json: { message: 'email - password pair does not match any registered user'}
+      render status: :unauthorized, json: {message: 'email - password pair does not match any registered user'}
     end
+  end
+
+  def destroy
+    remove_jwt_cookie if authenticated?
+    head :ok
   end
 
   def test
@@ -26,7 +36,7 @@ class AuthController < ApplicationController
     access_admin if role == 'admin'
     access_authenticated if role == 'authenticated'
     access_all unless role.present?
-    render status: :ok, json: { result: 'passed'}
+    render status: :ok, json: {result: 'passed'}
   end
 
   private
