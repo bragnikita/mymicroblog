@@ -85,6 +85,7 @@ RSpec.configure do |config|
 
   # config.include Helpers::RequestHelpers, type: :request
   config.include RequestHelpers, type: :request
+  config.include RequestHelpers, type: :controller
 end
 
 Shoulda::Matchers.configure do |config|

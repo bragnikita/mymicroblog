@@ -45,3 +45,28 @@ RSpec::Matchers.define :has_path do |path|
     end
   end
 end
+
+RSpec::Matchers.define :has_query do |expected|
+  match do |url|
+    begin
+      no_query_expected = expected.nil? || expected == '' || (expected.kind_of?(Hash) && expected.empty?)
+      p_url = URI(url)
+      return p_url.query.nil? if no_query_expected
+      return no_query_expected if p_url.query.nil?
+
+      if expected.kind_of?(Hash)
+        expected_params = expected.stringify_keys
+      else
+        expected_params = URI::decode_www_form(expected).to_h
+      end
+      actual_params = URI::decode_www_form(p_url.query).to_h
+      return expected_params.keys.all? do |exp_key|
+        act_value = actual_params[exp_key]
+        exp_value = expected_params[exp_key]
+        return exp_value.eql?(act_value)
+      end
+    rescue URI::InvalidURIError
+      return false
+    end
+  end
+end
