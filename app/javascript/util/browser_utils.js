@@ -25,3 +25,13 @@ export function copyToClipboard(str) {
 export function urlAbsolutize(relative) {
     return new URI().path(relative).toString();
 }
+
+export function redirectTo(urlOfPath) {
+    let target = new URI(urlOfPath);
+    if (target.is('relative')) {
+        target = new URI().resource(target.resource());
+    }
+    if (isDomEnv()) {
+        window.location.href = target.toString();
+    }
+}

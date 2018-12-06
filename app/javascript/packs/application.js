@@ -14,4 +14,6 @@ import 'bootstrap'
 import './../posting/styles.scss'
 import '@fortawesome/fontawesome-free/css/all.css'
 import '@fortawesome/fontawesome-free/css/v4-shims.css'
+import '../pages.scss';
+import '../user/login_form';
 console.log('Hello World from Webpacker');

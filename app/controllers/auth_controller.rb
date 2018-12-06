@@ -3,6 +3,13 @@
 class AuthController < ApplicationController
   skip_forgery_protection
 
+  def new
+    if authenticated?
+      redirect_to '/' and return
+    end
+    render 'sign_in'
+  end
+
   def create
     if authenticated?
       head :ok and return
@@ -16,7 +23,7 @@ class AuthController < ApplicationController
       return_to = session[:return_to] || '/'
       session[:return_to] = nil
       if request.xhr?
-        render status: :ok, json: { redirect_to: return_to }
+        render status: :ok, json: {redirect_to: return_to}
       else
         redirect_to return_to
       end
@@ -28,7 +35,11 @@ class AuthController < ApplicationController
 
   def destroy
     remove_jwt_cookie if authenticated?
-    head :ok
+    if request.xhr?
+      head :ok
+    else
+      redirect_to '/login'
+    end
   end
 
   def test

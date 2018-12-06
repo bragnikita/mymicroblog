@@ -1,0 +1,29 @@
+
+[data-name="page-sign-in"] {
+  .wrapper {
+    padding: 30px 15px ;
+  }
+  .box {
+    background-color: #9fcdff;
+    min-height: 200px;
+    max-width: 330px;
+    min-width: 250px;
+
+  }
+
+  .signin-form {
+    background-color: white;
+    padding: 5px 10px 5px;
+    border-radius: 4px;
+  }
+
+
+
+
+}
+
+.x-error-status {
+  padding: 5px;
+  background-color: #ffcfd1;
+  color: red;
+}
