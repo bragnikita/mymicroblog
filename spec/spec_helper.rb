@@ -99,7 +99,7 @@ RSpec.configure do |config|
   Kernel.srand config.seed
 =end
 
-  config.define_derived_metadata(:file_path => %r{spec/controllers}) do |meta|
+  config.define_derived_metadata(:file_path => %r{spec/.*}) do |meta|
     meta[:aggregate_failures] = true
   end
 

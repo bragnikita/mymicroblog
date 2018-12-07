@@ -1,6 +1,6 @@
 class PostsController < ApplicationController
 
-  before_action :access_admin, only: [:index]
+  before_action :access_authenticated, except: [:index]
 
   def index
     @index = IndexViewModel.new(Post.total_index(params))
@@ -15,12 +15,14 @@ class PostsController < ApplicationController
 
   def edit
     post = Post.find(params[:id])
+    restrict 'Access restricted' unless policy(post).able_to_edit?
     page.title = "[Edit]#{post.title}"
     render 'edit'
   end
 
   def update
     p = post_parameters
+    restrict 'Access restricted' unless policy(p[:id]).able_to_edit?
     op = UpdatePost.new.from_params(p).set_filter_factory(filter_factory).call!.result
     if request.xhr?
       render status: 200, json: {
@@ -46,7 +48,9 @@ class PostsController < ApplicationController
   end
 
   def display
-    @post = ViewModel.new(Post.by_slug(params[:slug]))
+    post = Post.by_slug(params[:slug])
+    restrict 'Access restricted' unless policy(post).able_to_view?
+    @post = ViewModel.new(post)
     page.title = @post.title
     render 'display', layout: 'layouts/post_display'
   end
@@ -54,6 +58,7 @@ class PostsController < ApplicationController
   def get
     contents_roles = params.fetch(:roles, '').split(',')
     post = Post.find(params[:id])
+    restrict 'Access restricted' unless policy(post).able_to_view?
     render json: {
       object: {
         id: post.id,
@@ -72,6 +77,14 @@ class PostsController < ApplicationController
   end
 
   private
+
+  def policy(post_or_id)
+    post = post_or_id
+    unless post.kind_of?(Post)
+      post = Post.find(post_or_id)
+    end
+    PostPolicy.new(current_user, post)
+  end
 
   def filter_factory
     Libs::ContentTransformers::TransformerChainFactory.new

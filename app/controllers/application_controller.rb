@@ -38,6 +38,10 @@ class ApplicationController < ActionController::Base
 
   end
 
+  def restrict(msg = '')
+    fail ApiErrors::AccessForbidden, msg
+  end
+
   def access_authenticated
     fail ApiErrors::AuthorizationRequired unless authenticated?
   end
