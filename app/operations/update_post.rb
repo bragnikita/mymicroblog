@@ -68,7 +68,11 @@ class UpdatePost
                              filter_factory
                                .create(content[:content_format])
                                .call(source_content)
-        @model.content_for_or_create!(role).update!({content: source_content, filtered_content: filtered_content, content_format: content[:content_format]})
+        current_content = @model.contents.find_by(role: role)
+        if current_content.nil?
+          current_content = @model.contents.create(role: role)
+        end
+        current_content.update!({content: source_content, filtered_content: filtered_content, content_format: content[:content_format]})
       end
     end
   end
