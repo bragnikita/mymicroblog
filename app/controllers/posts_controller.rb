@@ -23,7 +23,7 @@ class PostsController < ApplicationController
   def update
     p = post_parameters
     restrict 'Access restricted' unless policy(p[:id]).able_to_edit?
-    op = UpdatePost.new.from_params(p).set_filter_factory(filter_factory).call!.result
+    op = UpdatePost.new.from_params(p.merge({user_id: current_user.id})).set_filter_factory(filter_factory).call!.result
     if request.xhr?
       render status: 200, json: {
         result: 0,
@@ -36,7 +36,7 @@ class PostsController < ApplicationController
 
   def create
     slug = params[:slug]
-    AddPost.new(post_parameters).set_filter_factory(filter_factory).call!
+    AddPost.new(post_parameters.merge({user_id: current_user.id})).set_filter_factory(filter_factory).call!
     if request.xhr?
       render status: 200, json: {
         result: 0,
@@ -83,7 +83,7 @@ class PostsController < ApplicationController
     unless post.kind_of?(Post)
       post = Post.find(post_or_id)
     end
-    PostPolicy.new(current_user, post)
+    PostPolicy.new(current_user: current_user, resource: post)
   end
 
   def filter_factory
