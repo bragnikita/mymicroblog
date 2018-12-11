@@ -91,6 +91,13 @@ $mytheme-icon-color: $mytheme-color;
   margin-left: 5px;
 }
 
+.layout-config.central_column, .container {
+  @include media-breakpoint-down(sm) {
+    max-width: none;
+    width: 100%;
+  }
+}
+
 .layout-config.central_column {
   @extend .container;
   & > h1, & > h2, & > h3, & > h4, & > h5, & > h6 {
