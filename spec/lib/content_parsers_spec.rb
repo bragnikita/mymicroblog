@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-require "./app/content_helpers/content_parsers"
+require "./lib/content_parsers/content_parsers"
 
 RSpec.describe ContentParsers::TagParser do
   let(:parsed_tag) do

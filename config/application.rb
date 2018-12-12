@@ -28,6 +28,5 @@ module Mymicroblog
     # the framework and any gems in your application.
     config.autoload_paths << "#{Rails.root}/app/uploaders"
     config.autoload_paths << "#{Rails.root}/app/operations"
-    config.autoload_paths << "#{Rails.root}/app/content_helpers"
   end
 end

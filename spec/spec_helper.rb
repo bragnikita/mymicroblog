@@ -17,6 +17,7 @@ require 'rspec/collection_matchers'
 require 'forwardable'
 require "rspec/json_expectations"
 require 'capybara/rspec'
+require 'rspec-html-matchers'
 
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate
@@ -104,4 +105,5 @@ RSpec.configure do |config|
   end
 
   config.include RSpec::JsonExpectations::Matchers
+  config.include RSpecHtmlMatchers
 end

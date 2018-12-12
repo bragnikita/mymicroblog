@@ -70,6 +70,7 @@ group :test,"docker-test" do
   gem "faker", "~> 1.8"
   gem "database_cleaner"
   gem 'rspec-json_expectations'
+  gem 'rspec-html-matchers'
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem

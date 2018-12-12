@@ -6,6 +6,17 @@ module ContentParsers
     ContentParsers::tag_search_regex
   end
 
+
+  class Tag < Hash
+    attr_accessor :name, :content
+
+    def initialize(name = nil, content = '', attrs = {})
+      @name = name
+      @content = ''
+      self.merge!(attrs.stringify_keys) unless attrs.empty?
+    end
+  end
+
   class TagParser
     @@tag_regex = /((?<attr1>[a-z_]+)="(?<val1>.+?[^\\])")|((?<attr2>[a-z_]+)=(?<val2>[^\s"=]+))/
 
@@ -86,13 +97,6 @@ module ContentParsers
       offset
     end
 
-    class Tag < Hash
-      attr_accessor :name, :content
-
-      def initialize
-        @content = ''
-      end
-    end
 
   end
 end
