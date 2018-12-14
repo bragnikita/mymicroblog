@@ -30,7 +30,7 @@ module TagGenerators
       end
       ["<div#{render_attrs tag.slice('class')}>",
         "    <img#{render_attrs attrs} />",
-       "</div>"].join('\n')
+       "</div>"].join("\n")
     end
 
     private

@@ -1,5 +1,5 @@
-# require 'rails_helper'
-
+require 'rails_helper'
+require 'faker'
 require('./app/models/libs/content_transformers')
 
 include Libs::ContentTransformers
@@ -46,7 +46,7 @@ RSpec.shared_examples 'transformer API' do
   end
 end
 
-RSpec.describe MarkdownTransformer, type: :model do
+RSpec.describe MarkdownTransformer do
   let(:transformer) do
     MarkdownTransformer.new
   end
@@ -73,4 +73,30 @@ text *bold* text
       expect(html.gsub(/[\n]/,'').strip).to eq(%q(<h1 id="greeting">Greeting</h1><p>text <em>bold</em> text</p>))
     end
   end
+end
+
+RSpec.describe CustomTagTransformer do
+  let(:transformer) do
+    f = CustomTagTransformerFactory.new
+    f.build
+  end
+
+  it_behaves_like 'transformer API'
+
+  describe 'source convertation' do
+    let(:text) do
+      Faker::Lorem.paragraphs(3).join("\n")
+    end
+
+    let(:result) do
+      transformer.process text
+    end
+
+    it 'returns text' do
+      expect(result).not_to be_nil
+      expect(result).to be_kind_of(String)
+    end
+
+  end
+
 end

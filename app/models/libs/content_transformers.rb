@@ -1,4 +1,6 @@
 require 'kramdown'
+require "#{Rails.root.join 'lib', 'tag_generators', 'generator_factory'}"
+require "#{Rails.root.join 'lib', 'content_parsers', 'content_parsers'}"
 
 module Libs
   module ContentTransformers
@@ -7,6 +9,7 @@ module Libs
 
       def initialize
         @registred_transformer_factories = []
+        @registred_transformer_factories << CustomTagTransformerFactory.new
         @registred_transformer_factories << MarkdownTransformerFactory.new
       end
 
@@ -17,7 +20,7 @@ module Libs
         chain = TransformersChain.new
         chain_definition = format.strip.downcase.split(':')
         chain_definition.each do |definition|
-          @registred_transformer_factories.find_all{|f| f.matches?(definition)}.each{|f| chain.add(f.build)}
+          @registred_transformer_factories.find_all {|f| f.matches?(definition)}.each {|f| chain.add(f.build)}
         end
         chain
       end
@@ -40,7 +43,7 @@ module Libs
       end
 
       def print_chain
-        @chain.map{|t| t.class.name}.join(', ')
+        @chain.map {|t| t.class.name}.join(', ')
       end
 
     end
@@ -57,7 +60,7 @@ module Libs
 
     class MarkdownTransformerFactory < TransformerFactoryBase
       def matches?(request)
-        !!(request.strip.downcase =~ /^markdown/)
+        (request.strip.downcase =~ /^markdown/)
       end
 
       def build
@@ -72,6 +75,37 @@ module Libs
       end
     end
 
+    class CustomTagTransformerFactory < TransformerFactoryBase
+
+      def initialize
+        @tag_generators_factory = TagGenerators::NameBasedFactory.new
+      end
+
+      def matches?(request)
+        true
+      end
+
+      def build
+        CustomTagTransformer.new(@tag_generators_factory)
+      end
+    end
+
+    class CustomTagTransformer
+
+      def initialize(tag_factory)
+        @factory = tag_factory
+      end
+
+      def process(source)
+        scanner = ContentParsers::TagScanner.new(source)
+        scanner.traverse do |tag|
+          name = tag.name
+          generator = @factory.lookup(name)
+          generator.render(tag)
+        end
+      end
+
+    end
 
   end
 end
