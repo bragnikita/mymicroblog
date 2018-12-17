@@ -6,6 +6,8 @@ module TagGenerators
     IMAGE_BY_REF = :image_url_by
     CONTEXT_HELPER_METHODS = [IMAGE_BY_REF]
 
+    include TagHelpers
+
     def self.context_helper_methods
       CONTEXT_HELPER_METHODS
     end
@@ -28,9 +30,9 @@ module TagGenerators
           raise "Image with ref=#{tag['ref']} was not found and no fallback image in 'src' specified"
         end
       end
-      ["<div#{render_attrs tag.slice('class')}>",
-        "    <img#{render_attrs attrs} />",
-       "</div>"].join("\n")
+      div tag.slice('class') do
+        img attrs
+      end
     end
 
     private

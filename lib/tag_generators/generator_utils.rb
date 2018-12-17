@@ -31,4 +31,40 @@ module TagGenerators
       ERB::Util.unwrapped_html_escape(value)
     end
   end
+
+  module TagHelpers
+
+    def writer
+      @writer ||= ""
+    end
+
+    def div(attrs = {}, &block)
+      tag("div", {'inline' => false}.merge(attrs), &block)
+    end
+
+    def span(attrs = {})
+      tag("span", {'inline' => true}.merge(attrs))
+    end
+
+    def img(attrs = {})
+      tag("img", {'inline' => false}.merge(attrs))
+    end
+
+    def tag(tag_name = "div", attrs)
+      block = attrs.fetch('inline', false)
+      attrs.delete('inline')
+      writer << "<#{tag_name}#{render_attrs(attrs)}"
+      if block_given?
+        writer << " >"
+        writer << "\n    " if block
+        writer << yield
+        writer << "\n" if block
+        writer << "</#{tag_name}>"
+      else
+        writer << " />"
+      end
+      writer
+    end
+
+  end
 end
