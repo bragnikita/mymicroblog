@@ -23,7 +23,15 @@ export function copyToClipboard(str) {
 }
 
 export function urlAbsolutize(relative) {
-    return new URI().path(relative).toString();
+    const uri = new URI(relative);
+    if (uri.is("absolute")) {
+        return uri.toString();
+    }
+    return uri.path(relative).toString();
+}
+
+export function isAbsolute(url) {
+    return new URI(url).is("absolute");
 }
 
 export function redirectTo(urlOfPath) {

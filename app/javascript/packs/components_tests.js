@@ -4,6 +4,7 @@ import $ from 'jquery';
 import URI from 'urijs';
 import '../util/common_imports';
 import folders_index from '../images/folders/testcases_folders_index';
+import thumbnail_index from '../images/thumbnail/testcases_thumbnail';
 
 console.log('Components test --- START');
 const setMessage = (...msgs) => {
@@ -40,6 +41,7 @@ const prepareCases = (cases) => {
 };
 const tests = {
     folders_index: prepareCases(folders_index),
+    thumbnail_index: prepareCases(thumbnail_index),
 };
 window.tests = tests;
 
