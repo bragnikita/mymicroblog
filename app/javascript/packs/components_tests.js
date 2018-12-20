@@ -5,6 +5,11 @@ import URI from 'urijs';
 import '../util/common_imports';
 import folders_index from '../images/folders/testcases_folders_index';
 import thumbnail_index from '../images/thumbnail/testcases_thumbnail';
+import { configure } from 'enzyme';
+import Adapter from 'enzyme-adapter-react-16';
+
+
+configure({ adapter: new Adapter() });
 
 console.log('Components test --- START');
 const setMessage = (...msgs) => {

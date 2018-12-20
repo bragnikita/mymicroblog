@@ -13,6 +13,8 @@
 }
 
 :local(.image_wrapper) {
+  display: inline-block;
+  width: auto;
   position: relative;
 }
 

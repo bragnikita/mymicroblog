@@ -2,12 +2,13 @@ import React from 'react';
 import sinon from 'sinon';
 import {expect} from 'chai';
 
-import {mountComponent} from "../../util/react_utils";
+import {mountComponent, mountWithEnzyme} from "../../util/react_utils";
 import Thumbnail from "./thumbnail";
 
 
 const mountIt = (component) => {
-    mountComponent('.mount-point', component, true);
+    // mountComponent('.mount-point', component, true);
+    return mountWithEnzyme('.mount-point', component)
 };
 
 class StateWrapper extends React.Component {
@@ -19,13 +20,18 @@ class StateWrapper extends React.Component {
 }
 
 const preview_and_capture_mode = () => {
-    mountIt(<StateWrapper
+    const callback = sinon.spy();
+    const wrapper = mountIt(<StateWrapper
         ref_id={"100"}
-        onSelect={() => {}}
+        onSelect={callback}
         selected={false}
         orig_url={"https://via.placeholder.com/550/0000FF/808080?Text=Digital.com"}
         thumb_url={"https://via.placeholder.com/250/0000FF/808080?Text=Digital.com"}
     />);
+    return () => {
+        expect(callback.called, 'callback was not called').to.be.true
+        expect(callback.lastCall.lastArg, 'callback parameter is wrong' ).to.equal("100")
+    }
 };
 
 export default {
