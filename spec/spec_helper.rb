@@ -19,6 +19,8 @@ require "rspec/json_expectations"
 require 'capybara/rspec'
 require 'rspec-html-matchers'
 
+$LOAD_PATH << File.expand_path('../../lib', __FILE__)
+
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate
   # assertion/expectation library such as wrong or the stdlib/minitest
