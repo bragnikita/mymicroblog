@@ -53,7 +53,7 @@ RSpec.describe VnDialogFormatter::FormattedLineParser do
     let(:root) { parser.parse }
     let(:parser) { described_class.new(line)}
     before do
-      puts root
+      puts root.print
     end
     describe "without escaped symbols" do
       let(:line) { "al fefw snikta (sfdds fsfdf ) !! *fdsfd* speco (afdsfsd!)" }
@@ -114,6 +114,34 @@ RSpec.describe VnDialogFormatter::FormattedLineParser do
     end
   end
 
+end
+
+RSpec.describe VnDialogFormatter::ScriptModelBuilder do
+  let(:basic_model) do
+    reader = VnDialogFormatter::FileLineReader.new(File.expand_path('./correct.txt', __dir__))
+    parser = VnDialogFormatter::ScriptParser.new(reader)
+    parser.process
+  end
+  describe 'when script tree is recognizable' do
+    let(:model) do
+      described_class.new(basic_model).build
+    end
+
+    it 'builds model' do
+      expect{ model }.to_not raise_exception
+      puts model.print
+    end
+    it 'has correct top-level elements' do
+      expect(model).to be_a(ParsedScriptModel::Script)
+      expect(model.children).to all(be_kind_of(ParsedScriptModel::ScriptNode))
+    end
+    it 'has correct branched elements' do
+
+    end
+    it 'has correct text elements' do
+
+    end
+  end
 end
 
 RSpec::Matchers.define :have_type do |type|

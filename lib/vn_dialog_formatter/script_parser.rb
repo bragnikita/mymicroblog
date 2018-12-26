@@ -25,6 +25,7 @@ module VnDialogFormatter
       unless @current_base.is_node_of_type?(SCRIPT_BODY)
         raise ScriptParserError, "Unclosed block detected: #{print_block(@current_base)}"
       end
+      script_body
     end
 
     def script_body
@@ -149,7 +150,7 @@ module VnDialogFormatter
       return nil if @cursor >= @lines.length
       line = @lines[@cursor]
       @cursor += 1
-      line
+      line.delete_suffix("\n")
     end
   end
 
@@ -166,7 +167,6 @@ module VnDialogFormatter
 
     def initialize(line)
       @line = line
-      @model = ParsedScriptModel::FormattedText.new
     end
 
 
@@ -308,23 +308,8 @@ module VnDialogFormatter
       traverse_internal(self, &block)
     end
 
-    def to_s(lvl = 0)
-      if self.children.empty?
-        return lpad "[#{self.name}]--[#{self.content}]", lvl
-      end
-      lines = []
-      lines << lpad("[#{self.name}]--[#{self.content}]", lvl)
-      self.children.each do |c|
-        lines << c.to_s(lvl + 1)
-      end
-      lines << lpad("[/ #{self.name}]", lvl)
-      lines.join("\n")
-    end
-
-    def lpad(str, lvl)
-      s = ""
-      lvl.times {s = s + "  "}
-      s + str
+    def node_to_s
+      "[#{self.name}]--[#{self.content}]"
     end
 
     def join_contents
@@ -346,57 +331,117 @@ module VnDialogFormatter
     end
   end
 
-  # class ElementsParserImpl
-  #   def create_branch(line)
-  #     Branch.new extract(/\((.*)\)/, line)
-  #   end
-  #
-  #   def create_event(line)
-  #     Event.new extract(/^--(.+)/, line).strip
-  #   end
-  #
-  #   def create_note(line)
-  #     Note.new extract(/^\[(.+)\]/, line).strip
-  #   end
-  #
-  #   def create_attachment(line)
-  #     if /^<>/ =~ line
-  #       return FreeText.new
-  #     end
-  #     Image.new extract(/!(.+)!/, str).strip
-  #   end
-  #
-  #   def create_non_dialog_serif(line)
-  #     block = Serif.new
-  #     block.serif_type = VnDialogFormatter::BLACK_SCREEN_SERIF
-  #     if /^<.+>$/ =~ line
-  #       block.name = extract(/<(.+)>/, line)
-  #     else
-  #       block << parse_line_format(line)
-  #     end
-  #     block
-  #   end
-  #
-  #   def create_serif(str)
-  #     m = /^([^:]+):(.+)$/.match str
-  #     if m.nil?
-  #       name = nil
-  #       content = parse_line_format str
-  #     else
-  #       name = m[1]
-  #       content = parse_line_format m[2]
-  #     end
-  #     block = Serif.new
-  #     block.serif_type = VnDialogFormatter::DIALOG_SERIF
-  #     block.name = name
-  #     block << content
-  #     block
-  #   end
-  #
-  #   def parse_line_format(line)
-  #     # TODO
-  #     line
-  #   end
-  # end
+  class ScriptModelBuilder
+    def initialize(script_elements_tree)
+      @source_tree = script_elements_tree
+      @parser = ElementsParserImpl.new
+    end
 
+    def build
+      @result_tree = ParsedScriptModel::Script.new
+
+      parallel_traverse @source_tree.children, @result_tree
+
+      @result_tree
+    end
+
+    private
+
+    def parallel_traverse(list, result_root)
+      p = @parser
+      [list].flatten.each do |src_node|
+        case src_node.type
+        when BasicScriptModel::EVENT
+          result_root << p.create_event(src_node)
+        when
+          BasicScriptModel::DELIMETER,
+          BasicScriptModel::ATTACHMENT_IMAGE,
+          BasicScriptModel::DIRECT_COPY
+          result_root << p.create_attachment(src_node)
+        when BasicScriptModel::LOCATION_CHANGE
+          result_root << p.create_note(src_node)
+        when BasicScriptModel::DIALOG_SERIF
+          result_root << p.create_serif(src_node)
+        when BasicScriptModel::NON_DIALOG_SERIF
+          result_root << p.create_non_dialog_serif(src_node)
+        when BasicScriptModel::BRANCH
+          branch = p.create_branch(src_node)
+          parallel_traverse src_node.rest_children, branch
+          result_root << branch
+          # parallel_traverse src_node, branch
+        else
+          puts "Unknown type of script node: #{src_node.type}"
+        end
+      end
+    end
+  end
+  class ElementsParserImpl
+    include ParsedScriptModel
+    def create_branch(node)
+      ParsedScriptModel::Branch.with_name plain(extract(/\((.*)\)/, node.value).strip)
+    end
+
+    def create_event(node)
+      ParsedScriptModel::Event.with_content format(extract(/^--(.+)/, node.value).strip)
+    end
+
+    def create_note(node)
+      Note.with_content plain(extract(/^\[(.+)\]/, node.value).strip)
+    end
+
+    def create_attachment(attachment_node)
+      if attachment_node.is_node_of_type?(BasicScriptModel::DIRECT_COPY)
+        a = ParsedScriptModel::Attachment.of_type(ParsedScriptModel::ATTACHMENT_FREE_TEXT)
+        attachment_node.children.each do |c|
+          a << plain(c.value)
+        end
+        return a
+      end
+      if attachment_node.is_node_of_type?(BasicScriptModel::DELIMETER)
+        return ParsedScriptModel::Attachment.of_type(ParsedScriptModel::ATTACHMENT_DELIMETER)
+      end
+      line = attachment_node.children.first.value
+      ParsedScriptModel::Attachment.of_type(ParsedScriptModel::ATTACHMENT_IMAGE).with_value(extract(/!(.+)!/, line).strip)
+    end
+
+    def create_non_dialog_serif(node)
+      head = node.first_child
+      res = ParsedScriptModel::Serif.new(ParsedScriptModel::SERIF_NON_DIALOG)
+      if /^<(.+)>$/ =~ head.value
+        res.name = $~[1]
+      else
+        res << format(head.value)
+      end
+      node.rest_children.each do |c|
+        res << format(c.value)
+      end
+      res
+    end
+
+    def create_serif(node)
+      str = node.first_child.value
+      m = /^([^:]+):(.+)$/.match str
+      if m.nil?
+        name = nil
+        content = format str
+      else
+        name = m[1]
+        content = format m[2]
+      end
+      block = ParsedScriptModel::Serif.new(ParsedScriptModel::SERIF_DIALOG)
+      block.name = name
+      block << content
+      block
+    end
+
+    private
+
+    def format(plain_text)
+      ParsedScriptModel::ParsedText.new FormattedLineParser.new(plain_text).parse
+    end
+
+    def plain(plain_text)
+      ParsedScriptModel::PlainText.new(plain_text)
+    end
+  end
 end
