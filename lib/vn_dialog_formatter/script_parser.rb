@@ -323,6 +323,10 @@ module VnDialogFormatter
       to
     end
 
+    def to_s
+      self.join_contents
+    end
+
     private
 
     def traverse_internal(root, &block)
@@ -354,7 +358,7 @@ module VnDialogFormatter
         when BasicScriptModel::EVENT
           result_root << p.create_event(src_node)
         when
-          BasicScriptModel::DELIMETER,
+        BasicScriptModel::DELIMETER,
           BasicScriptModel::ATTACHMENT_IMAGE,
           BasicScriptModel::DIRECT_COPY
           result_root << p.create_attachment(src_node)
@@ -377,16 +381,23 @@ module VnDialogFormatter
   end
   class ElementsParserImpl
     include ParsedScriptModel
+
     def create_branch(node)
-      ParsedScriptModel::Branch.with_name plain(extract(/\((.*)\)/, node.value).strip)
+      ParsedScriptModel::Branch
+        .with_name(plain(extract(/\((.*)\)/, node.value).strip))
+        .with_lineno(node.lineno)
     end
 
     def create_event(node)
-      ParsedScriptModel::Event.with_content format(extract(/^--(.+)/, node.value).strip)
+      ParsedScriptModel::Event
+        .with_content(format(extract(/^--(.+)/, node.value).strip))
+        .with_lineno(node.lineno)
     end
 
     def create_note(node)
-      Note.with_content plain(extract(/^\[(.+)\]/, node.value).strip)
+      Note
+        .with_content(plain(extract(/^\[(.+)\]/, node.value).strip))
+        .with_lineno(node.lineno)
     end
 
     def create_attachment(attachment_node)
@@ -395,18 +406,24 @@ module VnDialogFormatter
         attachment_node.children.each do |c|
           a << plain(c.value)
         end
-        return a
+        return a.with_lineno(attachment_node.lineno)
       end
       if attachment_node.is_node_of_type?(BasicScriptModel::DELIMETER)
-        return ParsedScriptModel::Attachment.of_type(ParsedScriptModel::ATTACHMENT_DELIMETER)
+        return ParsedScriptModel::Attachment
+                 .of_type(ParsedScriptModel::ATTACHMENT_DELIMETER)
+                 .with_lineno(attachment_node.lineno)
       end
       line = attachment_node.children.first.value
-      ParsedScriptModel::Attachment.of_type(ParsedScriptModel::ATTACHMENT_IMAGE).with_value(extract(/!(.+)!/, line).strip)
+      ParsedScriptModel::Attachment
+        .of_type(ParsedScriptModel::ATTACHMENT_IMAGE)
+        .with_value(extract(/!(.+)!/, line).strip)
+        .with_lineno(attachment_node.lineno)
     end
 
     def create_non_dialog_serif(node)
       head = node.first_child
       res = ParsedScriptModel::Serif.new(ParsedScriptModel::SERIF_NON_DIALOG)
+      res.lineno = node.lineno
       if /^<(.+)>$/ =~ head.value
         res.name = $~[1]
       else
@@ -426,9 +443,10 @@ module VnDialogFormatter
         content = format str
       else
         name = m[1]
-        content = format m[2]
+        content = format m[2].lstrip
       end
       block = ParsedScriptModel::Serif.new(ParsedScriptModel::SERIF_DIALOG)
+      block.lineno = node.lineno
       block.name = name
       block << content
       block

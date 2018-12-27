@@ -32,6 +32,7 @@ gem 'jwt'
 # Logic
 gem 'simple_command'
 gem 'kramdown'
+gem 'htmlbeautifier'
 
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development

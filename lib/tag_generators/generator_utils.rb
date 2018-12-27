@@ -42,23 +42,23 @@ module TagGenerators
       tag("div", {'inline' => false}.merge(attrs), &block)
     end
 
-    def span(attrs = {})
-      tag("span", {'inline' => true}.merge(attrs))
+    def span(attrs = {}, &block)
+      tag("span", {'inline' => true}.merge(attrs), &block)
     end
 
-    def img(attrs = {})
-      tag("img", {'inline' => false}.merge(attrs))
+    def img(attrs = {}, &block)
+      tag("img", {'inline' => false}.merge(attrs), &block)
     end
 
     def tag(tag_name = "div", attrs)
-      block = attrs.fetch('inline', false)
+      inline = attrs.fetch('inline', false)
       attrs.delete('inline')
       writer << "<#{tag_name}#{render_attrs(attrs)}"
       if block_given?
         writer << " >"
-        writer << "\n    " if block
-        writer << yield
-        writer << "\n" if block
+        writer << "\n    " unless inline
+        yield
+        writer << "\n" unless inline
         writer << "</#{tag_name}>"
       else
         writer << " />"

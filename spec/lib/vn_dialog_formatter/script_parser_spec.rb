@@ -16,7 +16,7 @@ RSpec.describe VnDialogFormatter::ScriptParser do
       VnDialogFormatter::ScriptParser.new(reader)
     end
     it 'throws no exceptions' do
-      expect { parser.process }.not_to raise_error
+      expect {parser.process}.not_to raise_error
     end
     it 'generates model' do
       parser.process
@@ -50,50 +50,50 @@ RSpec.describe VnDialogFormatter::ScriptParser do
 end
 
 RSpec.describe VnDialogFormatter::FormattedLineParser do
-    let(:root) { parser.parse }
-    let(:parser) { described_class.new(line)}
-    before do
-      puts root.print
-    end
-    describe "without escaped symbols" do
-      let(:line) { "al fefw snikta (sfdds fsfdf ) !! *fdsfd* speco (afdsfsd!)" }
-      it 'should return root' do
-        expect(root).to have_type("ROOT")
-        expect(root.children).to have(6).items
-        expect(root.parent).to be_nil
-        expect(root[0]).to have_label('plain').and have_type(NODE_PLAIN_TEXT)
-        expect(root[1]).to have_label('minds').and have_type(NODE_WRAP)
-        expect(root[2]).to have_label('plain').and have_type(NODE_PLAIN_TEXT)
-        expect(root[3]).to have_label('emotions').and have_type(NODE_WRAP)
-        expect(root[4]).to have_label('plain').and have_type(NODE_PLAIN_TEXT)
-        expect(root[5]).to have_label('minds').and have_type(NODE_WRAP)
+  let(:root) {parser.parse}
+  let(:parser) {described_class.new(line)}
+  before do
+    puts root.print
+  end
+  describe "without escaped symbols" do
+    let(:line) {"al fefw snikta (sfdds fsfdf ) !! *fdsfd* speco (afdsfsd!)"}
+    it 'should return root' do
+      expect(root).to have_type("ROOT")
+      expect(root.children).to have(6).items
+      expect(root.parent).to be_nil
+      expect(root[0]).to have_label('plain').and have_type(NODE_PLAIN_TEXT)
+      expect(root[1]).to have_label('minds').and have_type(NODE_WRAP)
+      expect(root[2]).to have_label('plain').and have_type(NODE_PLAIN_TEXT)
+      expect(root[3]).to have_label('emotions').and have_type(NODE_WRAP)
+      expect(root[4]).to have_label('plain').and have_type(NODE_PLAIN_TEXT)
+      expect(root[5]).to have_label('minds').and have_type(NODE_WRAP)
 
-        expect(root.join_contents).to eq('al fefw snikta sfdds fsfdf  !! fdsfd speco afdsfsd!')
-      end
+      expect(root.join_contents).to eq('al fefw snikta sfdds fsfdf  !! fdsfd speco afdsfsd!')
     end
-    describe "with escaped symbols" do
-      let(:line) {'al fefw snikta \(sfdds fsfdf \) !! \*fdsfd\* speco (afdsfsd!)'}
-      it 'should return root' do
-        expect(root[0]).to have_label('plain').and have_type(NODE_PLAIN_TEXT)
-        expect(root[1]).to have_label('minds').and have_type(NODE_WRAP)
-        expect(root.join_contents).to eq('al fefw snikta (sfdds fsfdf ) !! *fdsfd* speco afdsfsd!')
-      end
+  end
+  describe "with escaped symbols" do
+    let(:line) {'al fefw snikta \(sfdds fsfdf \) !! \*fdsfd\* speco (afdsfsd!)'}
+    it 'should return root' do
+      expect(root[0]).to have_label('plain').and have_type(NODE_PLAIN_TEXT)
+      expect(root[1]).to have_label('minds').and have_type(NODE_WRAP)
+      expect(root.join_contents).to eq('al fefw snikta (sfdds fsfdf ) !! *fdsfd* speco afdsfsd!')
     end
-    describe "with nested tags" do
-      let(:line) {'al fefw snikta (sfdds *fdsfd* fsfdf ) !! speco (afdsfsd!)'}
-      it 'should return root' do
-        expect(root[0]).to have_label('plain').and have_type(NODE_PLAIN_TEXT)
-        expect(root[1]).to have_label('minds').and have_type(NODE_WRAP)
-        branch = root[1]
-        expect(branch[0]).to have_label('plain').and have_type(NODE_PLAIN_TEXT)
-        expect(branch[1]).to have_label('emotions').and have_type(NODE_WRAP)
-        expect(branch[2]).to have_label('plain').and have_type(NODE_PLAIN_TEXT)
-        expect(root[2]).to have_label('plain').and have_type(NODE_PLAIN_TEXT)
-        expect(root[3]).to have_label('minds').and have_type(NODE_WRAP)
+  end
+  describe "with nested tags" do
+    let(:line) {'al fefw snikta (sfdds *fdsfd* fsfdf ) !! speco (afdsfsd!)'}
+    it 'should return root' do
+      expect(root[0]).to have_label('plain').and have_type(NODE_PLAIN_TEXT)
+      expect(root[1]).to have_label('minds').and have_type(NODE_WRAP)
+      branch = root[1]
+      expect(branch[0]).to have_label('plain').and have_type(NODE_PLAIN_TEXT)
+      expect(branch[1]).to have_label('emotions').and have_type(NODE_WRAP)
+      expect(branch[2]).to have_label('plain').and have_type(NODE_PLAIN_TEXT)
+      expect(root[2]).to have_label('plain').and have_type(NODE_PLAIN_TEXT)
+      expect(root[3]).to have_label('minds').and have_type(NODE_WRAP)
 
-        expect(root.join_contents).to eq('al fefw snikta sfdds fdsfd fsfdf  !! speco afdsfsd!')
-      end
+      expect(root.join_contents).to eq('al fefw snikta sfdds fdsfd fsfdf  !! speco afdsfsd!')
     end
+  end
 
   describe "emphasis" do
     let(:line) {'al fefw snikta (sfdds fsfdf _деньги ничего не\_решают_ ) !! где-то_ '}
@@ -107,7 +107,7 @@ RSpec.describe VnDialogFormatter::FormattedLineParser do
   end
 
   describe "when there are escaped symbols" do
-    let(:line) { 'afsf wfe _a \_sfdf  t_\*{fsdf}\* ( \(plainext\) )  \≠fs '}
+    let(:line) {'afsf wfe _a \_sfdf  t_\*{fsdf}\* ( \(plainext\) )  \≠fs '}
     it 'replaces them with original symbols' do
       transformed_line = root.join_contents
       expect(transformed_line).to eq('afsf wfe a _sfdf  t*{fsdf}*  (plainext)   \\≠fs ')
@@ -128,7 +128,7 @@ RSpec.describe VnDialogFormatter::ScriptModelBuilder do
     end
 
     it 'builds model' do
-      expect{ model }.to_not raise_exception
+      expect {model}.to_not raise_exception
       puts model.print
     end
     it 'has correct top-level elements' do
@@ -136,10 +136,21 @@ RSpec.describe VnDialogFormatter::ScriptModelBuilder do
       expect(model.children).to all(be_kind_of(ParsedScriptModel::ScriptNode))
     end
     it 'has correct branched elements' do
-
+      branch = model[7]
+      expect(branch).to be_a(ParsedScriptModel::Branch)
+      expect(branch.name).to have_text('воспоминания')
+      expect(branch.children).to have(3).items
+      expect(branch.children[0]).to be_a(ParsedScriptModel::Serif).and have_category(ParsedScriptModel::SERIF_NON_DIALOG)
+      expect(branch.children[1]).to be_a(ParsedScriptModel::Note)
+      expect(branch.children[2]).to be_a(ParsedScriptModel::Serif).and have_category(ParsedScriptModel::SERIF_DIALOG)
     end
     it 'has correct text elements' do
-
+      expect(model[0].content).to be_a(ParsedScriptModel::PlainText).and have_text('гостиная')
+      expect(model[1].first_child).to be_a(ParsedScriptModel::ParsedText).and have_text('Привет!')
+      expect(model[3].first_child).to be_a(ParsedScriptModel::ParsedText).and have_text('Самое обычное начало дня')
+      expect(model[4].content).to be_a(ParsedScriptModel::ParsedText).and have_text('грохот')
+      expect(model[8].value).to be_a(String).and have_text('изображение.png')
+      expect(model[10].first_child).to be_a(ParsedScriptModel::PlainText).and have_text('<h2> Глава 0 </h2>')
     end
   end
 end
@@ -152,5 +163,21 @@ end
 RSpec::Matchers.define :have_label do |label|
   match do |block|
     block.label == label
+  end
+end
+RSpec::Matchers.define :have_category do |cat|
+  match do |block|
+    block.category == cat
+  end
+end
+RSpec::Matchers.define :have_text do |text|
+  match do |node|
+    if node.kind_of?(ParsedScriptModel::PlainText)
+      return node.plain_text == text
+    elsif node.kind_of?(ParsedScriptModel::ParsedText)
+      return node.text_root.to_s == text
+    else
+      return node.to_s == text
+    end
   end
 end

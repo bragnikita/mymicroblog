@@ -1,10 +1,20 @@
 module VnDialogFormatter
 
+  module HasLineNo
+    attr_accessor :lineno
+
+    def with_lineno(lineno)
+      self.lineno = lineno
+      self
+    end
+  end
+
   module TreeModel
     class Node
+      include HasLineNo
 
       attr_reader :children, :type
-      attr_accessor :parent, :lineno
+      attr_accessor :parent
 
 
       def initialize(type = self.class.name)
@@ -60,7 +70,7 @@ module VnDialogFormatter
           if c.kind_of?(Node)
             lines << c.print(lvl + 1)
           else
-            lines << lpad(c.to_s, lvl+1)
+            lines << lpad(c.to_s, lvl + 1)
           end
         end
         # lines << lpad(node_to_s, lvl)
@@ -100,7 +110,8 @@ module VnDialogFormatter
     end
 
     class TextNode
-      attr_accessor :value, :lineno
+      include HasLineNo
+      attr_accessor :value
 
       def initialize(text, lineno)
         @value = text
@@ -174,7 +185,7 @@ module VnDialogFormatter
           if c.kind_of?(ScriptNode)
             lines << c.print(lvl + 1)
           else
-            lines << lpad(c.to_s, lvl+1)
+            lines << lpad(c.to_s, lvl + 1)
           end
         end
         lines.join("\n")
@@ -184,7 +195,12 @@ module VnDialogFormatter
         ""
       end
 
-      private
+      def to_s
+        self.print_node
+      end
+
+      protected
+
       def print_node
         "[#{self.type}(#{category})]--#{self.node_to_s}"
       end
@@ -200,6 +216,15 @@ module VnDialogFormatter
       def node_to_s
         "#{name || "no name"}"
       end
+
+      def to_s
+        res = []
+        children.each do |c|
+          res << c.to_s
+        end
+        "#{name || "no name"}:#{res.join('\n')}"
+      end
+
     end
 
     class Branch < ScriptNode
@@ -278,15 +303,8 @@ module VnDialogFormatter
       end
     end
 
-    class MultilineText
-      attr_accessor :lines
-
-      def initialize
-        @lines = []
-      end
-    end
-
     class ParsedText
+      include HasLineNo
       attr_accessor :text_root
 
       def initialize(root)
@@ -299,6 +317,7 @@ module VnDialogFormatter
     end
 
     class PlainText
+      include HasLineNo
       attr_accessor :plain_text
 
       def initialize(text = "")
