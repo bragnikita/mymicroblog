@@ -50,7 +50,8 @@ module TagGenerators
       tag("img", {'inline' => false}.merge(attrs), &block)
     end
 
-    def tag(tag_name = "div", attrs)
+    def tag(tag_name = "div", attrs_s)
+      attrs = attrs_s.stringify_keys
       inline = attrs.fetch('inline', false)
       attrs.delete('inline')
       writer << "<#{tag_name}#{render_attrs(attrs)}"

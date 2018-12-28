@@ -148,8 +148,69 @@ module VnDialogFormatter
     end
 
     def render_formatted_text(text)
-      #TODO
-      text.to_s
+      ftr = FormattedTextRenderer.new(text.text_root)
+      ftr.render
+    end
+
+  end
+
+  class FormattedTextRenderer
+    include TagGenerators::TagHelpers
+    include TagGenerators::GeneratorUtils
+
+    TAG_NAMES = {
+      :minds => 'span',
+      :emotions => 'em',
+      :emphasis => 'strong'
+    }.stringify_keys
+
+    ATTRIBUTES = {
+      :minds => {:class => 'minds'},
+      :emotions => {},
+      :emphasis => {}
+    }.stringify_keys
+
+    attr_accessor :writer
+
+    def initialize(model)
+      @model = model
+      @writer = StringArrayCollector.new
+    end
+
+    def render
+      traverse @model
+      output
+    end
+
+    def output
+      writer.out
+    end
+
+    private
+
+    def traverse(root)
+    label = root.label
+      if label == 'root'
+        if root.children.empty?
+          writer << root.content
+        else
+          root.children.each {|c| traverse(c)}
+        end
+      elsif root.is_node_of_type?(VnDialogFormatter::NODE_WRAP)
+        tag_name = TAG_NAMES.fetch(label, 'span')
+        attrs = ATTRIBUTES.fetch(label, {:class => label})
+        tag(tag_name, attrs.merge('inline' => true)) do
+          if root.children.empty?
+            writer << root.content
+          else
+            root.children.each {|c| traverse(c)}
+          end
+        end
+      elsif root.is_node_of_type?(VnDialogFormatter::NODE_PLAIN_TEXT)
+        writer << root.content
+      else
+        puts "Unknown root type: #{root.type}"
+      end
     end
 
   end

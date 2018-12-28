@@ -171,7 +171,7 @@ module VnDialogFormatter
 
 
     def parse
-      @root = ParserNode.new(NODE_ROOT).with_content(@line)
+      @root = ParserNode.new(NODE_UNPARSED, 'root').with_content(@line)
       build_subtree @root
     end
 
@@ -211,18 +211,18 @@ module VnDialogFormatter
     end
 
     def remove_mid_nodes(root)
+      root.children.each do |c|
+        remove_mid_nodes c
+      end
       if root.is_node_of_type?(NODE_UNPARSED)
         if root.leaf?
           root.mutate(NODE_PLAIN_TEXT, "plain")
         else
-          root.children.each do |c|
-            remove_mid_nodes c
+          if root.parent
+            root.parent.remove_mid_node(root)
+          else
+            root.mutate(NODE_WRAP, 'root')
           end
-          root.parent.remove_mid_node(root)
-        end
-      else
-        root.children.each do |c|
-          remove_mid_nodes c
         end
       end
       root

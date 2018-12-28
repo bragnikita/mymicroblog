@@ -58,7 +58,7 @@ RSpec.describe VnDialogFormatter::FormattedLineParser do
   describe "without escaped symbols" do
     let(:line) {"al fefw snikta (sfdds fsfdf ) !! *fdsfd* speco (afdsfsd!)"}
     it 'should return root' do
-      expect(root).to have_type("ROOT")
+      expect(root).to have_label("root")
       expect(root.children).to have(6).items
       expect(root.parent).to be_nil
       expect(root[0]).to have_label('plain').and have_type(NODE_PLAIN_TEXT)
